@@ -2,6 +2,7 @@ package com.pikolinc.controllers.api;
 
 import com.google.gson.Gson;
 import com.pikolinc.dto.request.UserCreateDto;
+import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.services.UserService;
 import spark.Request;
 import spark.Response;
@@ -24,9 +25,13 @@ public class UserWebController {
     }
 
     public long insert(Request request, Response response) {
-        final UserCreateDto userCreateDto = gson.fromJson(request.body(), UserCreateDto.class);
+        String body = request.body();
 
+        if (body == null || body.isBlank())
+            throw new ValidationException("Request body cannot be empty");
 
-        return this.userService.insert(userCreateDto);
+        return this.userService.insert(
+                gson.fromJson(request.body(), UserCreateDto.class)
+        );
     }
 }
