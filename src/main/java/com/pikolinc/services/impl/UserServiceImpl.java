@@ -3,9 +3,10 @@ package com.pikolinc.services.impl;
 import com.pikolinc.dao.UserDao;
 import com.pikolinc.dto.request.UserCreateDto;
 import com.pikolinc.domain.User;
-import com.pikolinc.error.api.ApiResourceNotFound;
+import com.pikolinc.exceptions.api.ApiResourceNotFound;
 import com.pikolinc.services.UserService;
 import com.pikolinc.services.base.BaseService;
+import com.pikolinc.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,8 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public long insert(UserCreateDto user) {
+        ValidationUtil.validate(user);
+
         User userEntity = new User();
 
         userEntity.setAge(user.age());
@@ -37,9 +40,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     public User findById(long id) {
         Optional<User> user = withDao(UserDao.class, dao -> dao.findById(id));
 
-        if  (user.isPresent()) return user.get();
+        if (user.isEmpty())
+            throw new ApiResourceNotFound("User with id " + id + " not found");
 
-        throw new ApiResourceNotFound("User with id "  + id + " not found");
+        return user.get();
     }
 
     @Override
