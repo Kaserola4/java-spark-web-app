@@ -1,13 +1,13 @@
 package com.pikolinc.services.base;
 
-import com.pikolinc.config.Database;
+import com.pikolinc.app.initializer.config.DatabaseInitializer;
 import org.jdbi.v3.core.Jdbi;
 
 public class BaseService {
     protected final Jdbi jdbi;
 
     protected BaseService() {
-        this.jdbi = Database.getJdbi();
+        this.jdbi = DatabaseInitializer.getJdbi();
     }
 
     protected <R, D> R withDao(Class<D> daoClass, DaoCallback<R, D> callback) {

@@ -1,14 +1,14 @@
 package com.pikolinc.services;
 
-import com.pikolinc.domain.model.User;
+import com.pikolinc.dto.request.UserCreateDto;
+import com.pikolinc.domain.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
-    long insert(User user);
+    long insert(UserCreateDto user);
     List<User> findAll();
-    Optional<User> findById(long id);
-    long  update(User user);
+    User findById(long id);
+    long update(User user);
     long delete(long id);
 }

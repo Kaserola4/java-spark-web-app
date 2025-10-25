@@ -1,6 +1,6 @@
-package com.pikolinc.domain.dao;
+package com.pikolinc.dao;
 
-import com.pikolinc.domain.model.User;
+import com.pikolinc.domain.User;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
