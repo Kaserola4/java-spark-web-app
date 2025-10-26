@@ -31,3 +31,13 @@ business logic and request handling, the application achieves a high degree of m
 Overall, this project serves as an example of a well-structured Java web application, combining Spark framework routing,
 controller-based request handling, service-layer business logic, DAO-driven database operations, SQL persistence, and
 real-time updates for collectibles and bidding into a cohesive and maintainable system.
+
+# Installation and setup
+```bash
+git clone https://github.com/Kaserola4/java-spark-web-app.git
+cd ./java-spark-web-app/
+
+mvn clean install
+mvn
+
+```
