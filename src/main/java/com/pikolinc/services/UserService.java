@@ -11,4 +11,5 @@ public interface UserService {
     User findById(long id);
     long update(long id, UserCreateDto dto);
     long delete(long id);
+    Object options(long id);
 }

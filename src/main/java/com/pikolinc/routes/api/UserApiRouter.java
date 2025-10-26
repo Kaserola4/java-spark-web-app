@@ -15,11 +15,13 @@ public class UserApiRouter implements Router {
 
     @Override
     public void registerRoutes() {
+        logger.info("UserApiRouter registeredRoutes");
         Spark.path("/api/v1", () -> {
             Spark.get("/users", userController::findAll);
             Spark.get("/users/:id", userController::findById);
             Spark.post("/users", userController::insert);
             Spark.put("/users/:id", userController::update);
+            Spark.options("/users/:id", userController::options);
             Spark.delete("/users/:id", userController::delete);
         });
     }
