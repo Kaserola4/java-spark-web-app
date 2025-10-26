@@ -2,9 +2,9 @@ package com.pikolinc.app.initializer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.MalformedJsonException;
 import com.pikolinc.exceptions.ValidationException;
-import com.pikolinc.exceptions.api.ApiResourceNotFound;
+import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
+import com.pikolinc.exceptions.api.DuplicateResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
@@ -25,7 +25,7 @@ public class ExceptionHandlerInitializer implements Initializer {
 
     private void initApiExceptionHandler() {
         // 404 (Not found)
-        Spark.exception(ApiResourceNotFound.class, (e, req, res) -> {
+        Spark.exception(ApiResourceNotFoundException.class, (e, req, res) -> {
             logger.warn("Resource not found: {}", e.getMessage());
             res.type("application/json");
             res.status(404);
@@ -50,6 +50,19 @@ public class ExceptionHandlerInitializer implements Initializer {
 
             response.put("error", "Bad Request");
             response.put("message", cleanMessage);
+
+            res.body(gson.toJson(response));
+        });
+
+        // 409 (Duplicated Resource)
+        Spark.exception(DuplicateResourceException.class, (e, req, res) -> {
+            logger.warn("Attempted to create duplicated resource: {}", e.getMessage());
+            res.type("application/json");
+            res.status(409);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Validation failed");
+            response.put("details", e.getMessage());
 
             res.body(gson.toJson(response));
         });

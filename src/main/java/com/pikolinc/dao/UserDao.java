@@ -35,6 +35,9 @@ public interface UserDao {
 
     @SqlUpdate("DELETE FROM users WHERE id = :id")
     long deleteById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT COUNT(*) > 0 FROM users WHERE email = :email")
+    boolean existsByEmail(@Bind("email") String email);
 }
 
 

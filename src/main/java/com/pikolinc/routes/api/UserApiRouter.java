@@ -19,6 +19,7 @@ public class UserApiRouter implements Router {
             Spark.get("/users", userController::findAll);
             Spark.get("/users/:id", userController::findById);
             Spark.post("/users", userController::insert);
+            Spark.put("/users/:id", userController::update);
         });
     }
 }
