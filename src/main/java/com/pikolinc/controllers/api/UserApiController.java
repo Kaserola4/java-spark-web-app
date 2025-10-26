@@ -7,11 +7,11 @@ import com.pikolinc.services.UserService;
 import spark.Request;
 import spark.Response;
 
-public class UserWebController {
+public class UserApiController {
     private final UserService userService;
     private final Gson gson;
 
-    public UserWebController(UserService userService) {
+    public UserApiController(UserService userService) {
         this.gson = new Gson();
         this.userService = userService;
     }
@@ -36,13 +36,32 @@ public class UserWebController {
     }
 
     public long update(Request request, Response response) {
-        String  body = request.body();
+        String body = request.body();
 
         if (body == null || body.isBlank())
             throw new ValidationException("Request body cannot be empty");
 
-        return this.userService.update(
-                Long.parseLong(request.params("id")),
-                gson.fromJson(body, UserCreateDto.class));
+        long id;
+
+        try {
+            id = Long.parseLong(request.params(":id"));
+        } catch (NumberFormatException e) {
+            throw new ValidationException("Invalid id format");
+        }
+
+        return this.userService.update(id, gson.fromJson(body, UserCreateDto.class));
+    }
+
+    public long delete(Request request, Response response) {
+        long id;
+
+        try {
+            id = Long.parseLong(request.params(":id"));
+        }
+        catch (NumberFormatException e) {
+            throw new ValidationException("Invalid id format");
+        }
+
+        return this.userService.delete(id);
     }
 }

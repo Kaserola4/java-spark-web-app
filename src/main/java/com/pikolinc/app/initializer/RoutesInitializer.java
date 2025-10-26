@@ -1,6 +1,6 @@
 package com.pikolinc.app.initializer;
 
-import com.pikolinc.controllers.api.UserWebController;
+import com.pikolinc.controllers.api.UserApiController;
 import com.pikolinc.routes.api.Router;
 import com.pikolinc.routes.api.UserApiRouter;
 import com.pikolinc.services.impl.UserServiceImpl;
@@ -12,7 +12,7 @@ public class RoutesInitializer implements Initializer {
     @Override
     public void init() {
         List<Router> routers = List.of(
-                new UserApiRouter(new UserWebController(new UserServiceImpl()))
+                new UserApiRouter(new UserApiController(new UserServiceImpl()))
         );
 
         routers.forEach(Router::registerRoutes);
