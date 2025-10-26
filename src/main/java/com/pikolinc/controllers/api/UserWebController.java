@@ -31,7 +31,18 @@ public class UserWebController {
             throw new ValidationException("Request body cannot be empty");
 
         return this.userService.insert(
-                gson.fromJson(request.body(), UserCreateDto.class)
+                gson.fromJson(body, UserCreateDto.class)
         );
+    }
+
+    public long update(Request request, Response response) {
+        String  body = request.body();
+
+        if (body == null || body.isBlank())
+            throw new ValidationException("Request body cannot be empty");
+
+        return this.userService.update(
+                Long.parseLong(request.params("id")),
+                gson.fromJson(body, UserCreateDto.class));
     }
 }

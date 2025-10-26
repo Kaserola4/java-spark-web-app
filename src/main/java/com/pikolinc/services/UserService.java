@@ -6,9 +6,9 @@ import com.pikolinc.domain.User;
 import java.util.List;
 
 public interface UserService {
-    long insert(UserCreateDto user);
+    long insert(UserCreateDto dto);
     List<User> findAll();
     User findById(long id);
-    long update(User user);
+    long update(long id, UserCreateDto dto);
     long delete(long id);
 }
