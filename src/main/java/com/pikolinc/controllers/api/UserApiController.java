@@ -64,4 +64,17 @@ public class UserApiController {
 
         return this.userService.delete(id);
     }
+
+    public Object options(Request request, Response response) {
+        long id;
+
+        try {
+            id = Long.parseLong(request.params(":id"));
+        }
+        catch (NumberFormatException e) {
+            throw new ValidationException("Invalid id format");
+        }
+
+        return gson.toJson(this.userService.options(id));
+    }
 }

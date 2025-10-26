@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public class UserServiceImpl extends BaseService implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -97,6 +98,16 @@ public class UserServiceImpl extends BaseService implements UserService {
             logger.info("User deleted with id: {}", id);
 
             return deleted;
+        });
+    }
+    @Override
+    public Map<String, Boolean> options(long id) {
+        logger.info("Checking existence of user with id: {}", id);
+
+        return withDao(UserDao.class, dao -> {
+            boolean exists = dao.findById(id).isPresent();
+            logger.info("User with id {} exists: {}", id, exists);
+            return Map.of("exists", exists);
         });
     }
 }
