@@ -1,7 +1,9 @@
 package com.pikolinc;
 
-public class Main {
-    public static void main(String[] args) {
+import com.pikolinc.app.ServerInitializer;
 
+public class JavaSparkWebApp {
+    public static void main(String[] args) {
+        ServerInitializer.run();
     }
 }
