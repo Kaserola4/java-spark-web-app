@@ -18,24 +18,19 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public long insert(UserCreateDto dto) {
-        // Validate DTO
         ValidationUtil.validate(dto);
 
-        // Check for duplicate email and insert
         return withDao(UserDao.class, dao -> {
-            // Check if email already exists
             if (dao.existsByEmail(dto.email())) {
                 logger.warn("Attempted to create user with duplicate email: {}", dto.email());
                 throw new DuplicateResourceException("User", "email", dto.email());
             }
 
-            // Create user entity
             User userEntity = new User();
             userEntity.setName(dto.name());
             userEntity.setEmail(dto.email());
             userEntity.setAge(dto.age());
 
-            // Insert and get generated ID
             long userId = dao.insert(userEntity);
             logger.info("User created with id: {}", userId);
 
@@ -93,7 +88,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         logger.info("Deleting user with id: {}", id);
 
         return withDao(UserDao.class, dao -> {
-            // Check if user exists before deleting
             if (dao.findById(id).isEmpty()) {
                 logger.warn("Attempted to delete non-existent user with id: {}", id);
                 throw new ApiResourceNotFoundException("User", id);

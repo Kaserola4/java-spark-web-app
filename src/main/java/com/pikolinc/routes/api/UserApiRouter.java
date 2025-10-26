@@ -1,15 +1,15 @@
 package com.pikolinc.routes.api;
 
-import com.pikolinc.controllers.api.UserWebController;
+import com.pikolinc.controllers.api.UserApiController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
 
 public class UserApiRouter implements Router {
     private static final Logger logger = LoggerFactory.getLogger(UserApiRouter.class);
-    private final UserWebController userController;
+    private final UserApiController userController;
 
-    public UserApiRouter(UserWebController userController) {
+    public UserApiRouter(UserApiController userController) {
         this.userController = userController;
     }
 
@@ -20,6 +20,7 @@ public class UserApiRouter implements Router {
             Spark.get("/users/:id", userController::findById);
             Spark.post("/users", userController::insert);
             Spark.put("/users/:id", userController::update);
+            Spark.delete("/users/:id", userController::delete);
         });
     }
 }
