@@ -8,9 +8,9 @@ This project demonstrates modern Java web development practices with a clean arc
 The architecture follows a layered approach to separate concerns and improve maintainability. At the top, the HTTP
 client or browser interacts with the application, sending requests to the server. These requests are first handled by
 the Spark framework, which is responsible for routing and mapping requests to the appropriate controller endpoints. The
-RoutesInitializer sets up all the , connecting the HTTP layer with the controller layer.
+RoutesInitializer sets up all the routes, connecting the HTTP layer with the controller layer.
 
-The controller layeroutesr is responsible for handling incoming requests, parsing JSON input, validating data, and delegating
+The controller layer is responsible for handling incoming requests, parsing JSON input, validating data, and delegating
 the processing to the service layer. For example, the UserApiController manages all user-related requests, ensuring that
 input is correctly validated and that responses are formatted properly before sending them back to the client.
 
