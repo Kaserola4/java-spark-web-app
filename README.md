@@ -38,6 +38,6 @@ git clone https://github.com/Kaserola4/java-spark-web-app.git
 cd ./java-spark-web-app/
 
 mvn clean install
-mvn
+mvn exec:java
 
 ```
