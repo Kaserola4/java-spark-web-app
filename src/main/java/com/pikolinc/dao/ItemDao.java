@@ -34,4 +34,7 @@ public interface ItemDao {
 
     @SqlUpdate("UPDATE items SET name = :name, description = :description, price = :price WHERE id = :id")
     long update(@BindBean Item item);
+
+    @SqlQuery("DELETE * FROM items where id = :id")
+    int deleteById(@Bind("id") Long id);
 }

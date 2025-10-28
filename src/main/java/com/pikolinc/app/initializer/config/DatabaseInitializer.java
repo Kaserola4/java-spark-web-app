@@ -25,6 +25,5 @@ public class DatabaseInitializer implements Initializer {
         jdbi.useExtension(UserDao.class, UserDao::createTable);
         jdbi.useExtension(ItemDao.class, ItemDao::createTable);
 
-
     }
 }
