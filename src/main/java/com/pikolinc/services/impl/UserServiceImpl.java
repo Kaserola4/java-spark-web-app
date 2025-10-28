@@ -27,10 +27,11 @@ public class UserServiceImpl extends BaseService implements UserService {
                 throw new DuplicateResourceException("User", "email", dto.email());
             }
 
-            User userEntity = new User();
-            userEntity.setName(dto.name());
-            userEntity.setEmail(dto.email());
-            userEntity.setAge(dto.age());
+            User userEntity = User.builder()
+                    .name(dto.name())
+                    .email(dto.email())
+                    .age(dto.age())
+                    .build();
 
             long userId = dao.insert(userEntity);
             logger.info("User created with id: {}", userId);
@@ -50,11 +51,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         logger.info("Finding user by id: {}", id);
 
         return withDao(UserDao.class, dao ->
-                dao.findById(id)
-                        .orElseThrow(() -> {
-                            logger.warn("User not found with id: {}", id);
-                            return new ApiResourceNotFoundException("User", id);
-                        })
+                dao.findById(id).orElseThrow(() -> {
+                    logger.warn("User not found with id: {}", id);
+                    return new ApiResourceNotFoundException("User", id);
+                })
         );
     }
 
@@ -100,6 +100,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             return deleted;
         });
     }
+
     @Override
     public Map<String, Boolean> options(long id) {
         logger.info("Checking existence of user with id: {}", id);
