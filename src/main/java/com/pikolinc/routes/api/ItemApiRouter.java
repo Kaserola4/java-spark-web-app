@@ -18,13 +18,12 @@ public class ItemApiRouter implements Router {
         logger.info("Registering routes for ItemApiController");
 
         Spark.path("/api/v1", () -> {
-                    Spark.get("/items", itemController::findAll);
-                    Spark.get("/items/:id", itemController::findById);
-                    Spark.post("/items", itemController::insert);
-                    Spark.put("/items/:id", itemController::update);
-                    Spark.options("/items/:id", itemController::options);
-                    Spark.delete("/items/:id", itemController::delete);
-                }
-        );
+            Spark.get("/items", itemController::findAll);
+            Spark.get("/items/:id", itemController::findById);
+            Spark.post("/items", itemController::insert);
+            Spark.put("/items/:id", itemController::update);
+            Spark.options("/items/:id", itemController::options);
+            Spark.delete("/items/:id", itemController::delete);
+        });
     }
 }
