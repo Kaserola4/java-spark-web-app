@@ -45,4 +45,7 @@ public interface OfferDao {
 
     @SqlUpdate("DELETE FROM offers WHERE id = :id")
     long deleteById(@Bind("id") Long id);
+
+    @SqlUpdate("UPDATE offers SET amount = :amount WHERE id = :id")
+    long updateAmount(@Bind("id") Long id, @Bind("amount") Double amount);
 }
