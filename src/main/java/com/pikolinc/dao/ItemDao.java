@@ -15,11 +15,14 @@ import java.util.Optional;
 @RegisterBeanMapper(Item.class)
 public interface ItemDao {
 
-    @SqlUpdate("CREATE TABLE IF NOT EXISTS items (" +
-            "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-            "name VARCHAR(255) NOT NULL, " +
-            "description TEXT, " +
-            "price DECIMAL(10, 2) NOT NULL)")
+    @SqlUpdate("""
+                CREATE TABLE IF NOT EXISTS items (
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    description TEXT,
+                    price DECIMAL(10, 2) NOT NULL
+                )
+            """)
     void createTable();
 
     @SqlUpdate("INSERT INTO items (name, description, price) VALUES (:name, :description, :price)")
