@@ -24,7 +24,7 @@ public class OfferApiRouter implements Router {
             Spark.post("/offers", offerController::insert);
             Spark.put("/offers/:id", offerController::update);
             Spark.delete("/offers/:id", offerController::delete);
-            Spark.options("/offers/:id", offerController::options);
+
             // Filters per item
             Spark.get("/offers/item/:itemId", offerController::findByItemId);
             Spark.get("/offers/item/:itemId/active", offerController::findByItemIdAndActive);
@@ -43,7 +43,6 @@ public class OfferApiRouter implements Router {
             Spark.put("/offers/:id/cancel", offerController::cancelOffer);
 
             // Rebid
-
             Spark.patch("/offers/:id/amount", offerController::updateAmount);
         });
 
