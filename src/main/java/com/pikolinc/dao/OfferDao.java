@@ -1,6 +1,7 @@
 package com.pikolinc.dao;
 
 import com.pikolinc.domain.Offer;
+import com.pikolinc.domain.User;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -15,16 +16,17 @@ import java.util.Optional;
 public interface OfferDao {
 
     @SqlUpdate("""
-        CREATE TABLE IF NOT EXISTS offers (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            user_id BIGINT NOT NULL,
-            item_id BIGINT NOT NULL,
-            amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
-        )
-    """)
+                CREATE TABLE IF NOT EXISTS offers (
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    user_id BIGINT NOT NULL,
+                    item_id BIGINT NOT NULL,
+                    amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    status VARCHAR(255) DEFAULT "OPEN",
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+                )
+            """)
     void createTable();
 
     @SqlUpdate("INSERT INTO offers (user_id, item_id, amount) VALUES (:userId, :itemId, :amount)")
@@ -33,6 +35,9 @@ public interface OfferDao {
 
     @SqlQuery("SELECT * FROM offers WHERE id = :id")
     Optional<Offer> findById(@Bind("id") Long id);
+
+    @SqlUpdate("UPDATE offers SET user_id = :userId, item_id = :itemId, amount = :amount, status = :status WHERE id = :id")
+    long update(@BindBean Offer offer);
 
     @SqlQuery("SELECT * FROM offers WHERE item_id = :itemId ORDER BY amount DESC")
     List<Offer> findByItemId(@Bind("itemId") Long itemId);
