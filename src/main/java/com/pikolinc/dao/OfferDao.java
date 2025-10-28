@@ -1,7 +1,6 @@
 package com.pikolinc.dao;
 
 import com.pikolinc.domain.Offer;
-import com.pikolinc.domain.User;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
@@ -53,4 +52,16 @@ public interface OfferDao {
 
     @SqlUpdate("UPDATE offers SET amount = :amount WHERE id = :id")
     long updateAmount(@Bind("id") Long id, @Bind("amount") Double amount);
+
+    @SqlQuery("SELECT * FROM offers WHERE item_id = :itemId AND status = :status ORDER BY amount DESC")
+    List<Offer> findByItemIdAndStatus(@Bind("itemId") Long itemId, @Bind("status") String status);
+
+    @SqlQuery("SELECT * FROM offers WHERE user_id = :userId AND status = :status")
+    List<Offer> findByUserIdAndStatus(@Bind("userId") Long userId, @Bind("status") String status);
+
+    @SqlQuery("SELECT * FROM offers WHERE status = :status")
+    List<Offer> findByStatus(@Bind("status") String status);
+
+    @SqlUpdate("UPDATE offers SET status = :status WHERE id = :id")
+    long updateStatus(@Bind("id") Long id, @Bind("status") String status);
 }
