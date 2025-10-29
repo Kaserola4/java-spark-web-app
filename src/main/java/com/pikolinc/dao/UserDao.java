@@ -13,12 +13,16 @@ import java.util.Optional;
 
 @RegisterBeanMapper(User.class)
 public interface UserDao {
-    @SqlUpdate("CREATE TABLE IF NOT EXISTS users (" +
-            "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-            "name VARCHAR(255) NOT NULL, " +
-            "email VARCHAR(255) UNIQUE NOT NULL, " +
-            "age INT)")
+    @SqlUpdate("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) UNIQUE NOT NULL,
+                    age INT
+                )
+            """)
     void createTable();
+
 
     @SqlUpdate("INSERT INTO users (name, email, age) VALUES (:name, :email, :age)")
     @GetGeneratedKeys
