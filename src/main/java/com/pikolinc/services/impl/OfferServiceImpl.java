@@ -7,22 +7,44 @@ import com.pikolinc.dto.request.OfferCreateDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
 import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
+import com.pikolinc.exceptions.api.DuplicateResourceException;
+import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
+import com.pikolinc.services.UserService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class OfferServiceImpl extends BaseService implements OfferService {
     private static final Logger logger = LoggerFactory.getLogger(OfferServiceImpl.class);
+    private final ItemService itemService;
+    private final UserService userService;
+
+    public OfferServiceImpl(ItemService itemService, UserService userService) {
+        this.itemService = itemService;
+        this.userService = userService;
+    }
 
     @Override
     public long insert(OfferCreateDto offerCreateDto) {
         ValidationUtil.validate(offerCreateDto);
 
+        itemService.findById(offerCreateDto.itemId());
+        userService.findById(offerCreateDto.userId());
+
         return withDao(OfferDao.class, dao -> {
+            final List<Offer> offersWithSameItemId = dao.findByItemId(offerCreateDto.itemId());
+
+            offersWithSameItemId.forEach(offer -> {
+                if (offer.getUserId().equals(offerCreateDto.userId()))
+                    throw new DuplicateResourceException("Offer already exists");
+            });
+
             Offer offer = new Offer();
             offer.setUserId(offerCreateDto.userId());
             offer.setItemId(offerCreateDto.itemId());

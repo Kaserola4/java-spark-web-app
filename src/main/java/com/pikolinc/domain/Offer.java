@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -15,7 +15,7 @@ public class Offer {
     private Long itemId;
     private Double amount;
     private OfferStatus status;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     public Offer() {
         this.status = OfferStatus.OPEN;

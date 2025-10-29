@@ -127,7 +127,7 @@ public class OfferApiController {
         try {
             status = OfferStatus.valueOf(statusParam);
         } catch (IllegalArgumentException e) {
-            throw new ValidationException("Invalid status. Valid values: OPEN, ACCEPTED, REJECTED, WITHDRAWN, EXPIRED, COMPLETED, CANCELLED");
+            throw new ValidationException("Invalid status. Valid values: OPEN, ACCEPTED, REJECTED, COMPLETED, CANCELLED");
         }
 
         return this.gson.toJson(this.offerService.findByStatus(status));

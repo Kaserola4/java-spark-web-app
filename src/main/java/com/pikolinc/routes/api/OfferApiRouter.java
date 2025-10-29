@@ -45,7 +45,5 @@ public class OfferApiRouter implements Router {
             // Rebid
             Spark.patch("/offers/:id/amount", offerController::updateAmount);
         });
-
-
     }
 }

@@ -3,7 +3,9 @@ package com.pikolinc.app.initializer.config;
 
 import com.pikolinc.app.initializer.Initializer;
 import com.pikolinc.dao.ItemDao;
+import com.pikolinc.dao.OfferDao;
 import com.pikolinc.dao.UserDao;
+import com.pikolinc.domain.Offer;
 import lombok.Getter;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -24,6 +26,7 @@ public class DatabaseInitializer implements Initializer {
 
         jdbi.useExtension(UserDao.class, UserDao::createTable);
         jdbi.useExtension(ItemDao.class, ItemDao::createTable);
+        jdbi.useExtension(OfferDao.class,  OfferDao::createTable);
 
     }
 }

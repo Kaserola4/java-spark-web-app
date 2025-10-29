@@ -21,7 +21,7 @@ public interface OfferDao {
                     item_id BIGINT NOT NULL,
                     amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    status VARCHAR(255) DEFAULT "OPEN",
+                    status VARCHAR(255) DEFAULT 'OPEN',
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
                 )
