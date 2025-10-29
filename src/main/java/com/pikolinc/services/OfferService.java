@@ -5,22 +5,23 @@ import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
+import com.pikolinc.dto.response.OfferResponseDto;
 
 import java.util.List;
 
 public interface OfferService {
     long insert(OfferCreateDto offerCreateDto);
-    List<Offer> findAll();
-    Offer findById(long id);
+    List<OfferResponseDto> findAll();
+    OfferResponseDto findById(long id);
     long update(long id, OfferUpdateDto offerUpdateDto);
     long delete(long id);
 
     // Filters
-    List<Offer> findByItemId(long itemId);
-    List<Offer> findByItemIdAndStatus(long itemId, OfferStatus status);
-    List<Offer> findByUserId(long userId);
-    List<Offer> findByUserIdAndStatus(long userId, OfferStatus status);
-    List<Offer> findByStatus(OfferStatus status);
+    List<OfferResponseDto> findByItemId(long itemId);
+    List<OfferResponseDto> findByItemIdAndStatus(long itemId, OfferStatus status);
+    List<OfferResponseDto> findByUserId(long userId);
+    List<OfferResponseDto> findByUserIdAndStatus(long userId, OfferStatus status);
+    List<OfferResponseDto> findByStatus(OfferStatus status);
     
     // State changes
     long acceptOffer(long id);

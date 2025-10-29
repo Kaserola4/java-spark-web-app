@@ -5,6 +5,7 @@ import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
+import com.pikolinc.dto.response.OfferResponseDto;
 import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.exceptions.api.DuplicateResourceException;
@@ -38,7 +39,7 @@ public class OfferServiceImpl extends BaseService implements OfferService {
         userService.findById(offerCreateDto.userId());
 
         return withDao(OfferDao.class, dao -> {
-            final List<Offer> offersWithSameItemId = dao.findByItemId(offerCreateDto.itemId());
+            final List<OfferResponseDto> offersWithSameItemId = dao.findByItemId(offerCreateDto.itemId());
 
             offersWithSameItemId.forEach(offer -> {
                 if (offer.getUserId().equals(offerCreateDto.userId()))
@@ -59,13 +60,13 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     }
 
     @Override
-    public List<Offer> findAll() {
+    public List<OfferResponseDto> findAll() {
         logger.info("Find all offers");
         return withDao(OfferDao.class, OfferDao::findAll);
     }
 
     @Override
-    public Offer findById(long id) {
+    public OfferResponseDto findById(long id) {
         logger.info("Find offer with id {}", id);
 
         return withDao(OfferDao.class, dao ->
@@ -81,14 +82,16 @@ public class OfferServiceImpl extends BaseService implements OfferService {
         ValidationUtil.validate(offerUpdateDto);
 
         return withDao(OfferDao.class, dao -> {
-            Offer existingOffer = dao.findById(id).orElseThrow(() -> new ApiResourceNotFoundException("Offer", id));
+            OfferResponseDto existingOffer = dao.findById(id).orElseThrow(() -> new ApiResourceNotFoundException("Offer", id));
 
-            existingOffer.setUserId(offerUpdateDto.getUserId());
-            existingOffer.setItemId(offerUpdateDto.getItemId());
-            existingOffer.setAmount(offerUpdateDto.getAmount());
-            existingOffer.setStatus(offerUpdateDto.getStatus());
+            Offer offer = Offer.builder()
+                    .id(existingOffer.getId())
+                    .userId(offerUpdateDto.getUserId())
+                    .amount(offerUpdateDto.getAmount())
+                    .status(offerUpdateDto.getStatus())
+                    .build();
 
-            long updated = dao.update(existingOffer);
+            long updated = dao.update(offer);
 
             logger.info("Offer updated with id: {}", id);
 
@@ -115,31 +118,31 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     }
 
     @Override
-    public List<Offer> findByItemId(long itemId) {
+    public List<OfferResponseDto> findByItemId(long itemId) {
         logger.info("Find by offers with item id: {}", itemId);
         return withDao(OfferDao.class, dao -> dao.findByItemId(itemId));
     }
 
     @Override
-    public List<Offer> findByItemIdAndStatus(long itemId, OfferStatus status) {
+    public List<OfferResponseDto> findByItemIdAndStatus(long itemId, OfferStatus status) {
         logger.info("Find offers with item id: {} and status: {}", itemId, status);
         return withDao(OfferDao.class, dao -> dao.findByItemIdAndStatus(itemId, status.name()));
     }
 
     @Override
-    public List<Offer> findByUserId(long userId) {
+    public List<OfferResponseDto> findByUserId(long userId) {
         logger.info("Find offers by user id: {}", userId);
         return withDao(OfferDao.class, dao -> dao.findByUserId(userId));
     }
 
     @Override
-    public List<Offer> findByUserIdAndStatus(long userId, OfferStatus status) {
+    public List<OfferResponseDto> findByUserIdAndStatus(long userId, OfferStatus status) {
         logger.info("Find offers by user id: {} and status: {}", userId, status);
         return withDao(OfferDao.class, dao -> dao.findByUserIdAndStatus(userId, status.name()));
     }
 
     @Override
-    public List<Offer> findByStatus(OfferStatus status) {
+    public List<OfferResponseDto> findByStatus(OfferStatus status) {
         logger.info("Find offers by status: {}", status);
         return withDao(OfferDao.class, dao -> dao.findByStatus(status.name()));
     }
@@ -164,7 +167,7 @@ public class OfferServiceImpl extends BaseService implements OfferService {
 
     @Override
     public long cancelOffer(long id) {
-        Offer offer = findById(id);
+        OfferResponseDto offer = findById(id);
 
         if (offer.getStatus() != OfferStatus.OPEN && offer.getStatus() != OfferStatus.ACCEPTED)
             throw new ValidationException("Cannot cancel offer with status: " + offer.getStatus());
@@ -183,7 +186,7 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     }
 
     private void validateOfferStatus(long id, OfferStatus expectedStatus) {
-        Offer offer = findById(id);
+        OfferResponseDto offer = findById(id);
 
         if (offer.getStatus() != expectedStatus) {
             throw new ValidationException(
