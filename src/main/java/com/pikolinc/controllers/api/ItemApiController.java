@@ -2,6 +2,7 @@ package com.pikolinc.controllers.api;
 
 import com.google.gson.Gson;
 import com.pikolinc.services.ItemService;
+import com.pikolinc.util.ValidationUtil;
 import spark.Request;
 import spark.Response;
 
@@ -26,31 +27,16 @@ public class ItemApiController {
     }
 
     public long insert(Request request, Response response) {
-        String body = request.body();
-
-        if (body == null || body.isBlank())
-            throw new ValidationException("Request body cannot be empty");
-
+        ValidationUtil.validateNotEmptyBody(request.body());
         return this.itemService.insert(
-                gson.fromJson(body, ItemCreateDto.class)
+                gson.fromJson(request.body(), ItemCreateDto.class)
         );
     }
 
     public long update(Request request, Response response) {
-        String body = request.body();
-
-        if (body == null || body.isBlank())
-            throw new ValidationException("Request body cannot be empty");
-
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
-        return this.itemService.update(id, gson.fromJson(body, ItemCreateDto.class));
+        ValidationUtil.validateNotEmptyBody(request.body());
+        long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
+        return this.itemService.update(id, gson.fromJson(request.body(), ItemCreateDto.class));
     }
 
     public long delete(Request request, Response response) {
