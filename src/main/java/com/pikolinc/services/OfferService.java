@@ -30,5 +30,5 @@ public interface OfferService {
     long cancelOffer(long id);
 
     // Rebidding if status = OPEN
-    long updateAmount(long id, double amount);
+    long updateAmount(long id, OfferUpdateDto offerUpdateDto);
 }

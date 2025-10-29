@@ -14,6 +14,7 @@ import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,13 +177,10 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     }
 
     @Override
-    public long updateAmount(long id, double amount) {
+    public long updateAmount(long id, OfferUpdateDto updateDto) {
+        ValidationUtil.validate(updateDto);
         validateOfferStatus(id, OfferStatus.OPEN);
-
-        if (amount <= 0)
-            throw new ValidationException("Amount must be greater than 0");
-
-        return withDao(OfferDao.class, dao -> dao.updateAmount(id, amount));
+        return withDao(OfferDao.class, dao -> dao.updateAmount(id, updateDto.getAmount()));
     }
 
     private void validateOfferStatus(long id, OfferStatus expectedStatus) {

@@ -1,4 +1,3 @@
-// dao/ItemDao.java
 package com.pikolinc.dao;
 
 import com.pikolinc.domain.Item;

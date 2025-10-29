@@ -7,7 +7,6 @@ import spark.Request;
 import spark.Response;
 
 import com.pikolinc.dto.request.ItemCreateDto;
-import com.pikolinc.exceptions.ValidationException;
 
 public class ItemApiController {
     private final ItemService itemService;
@@ -28,9 +27,7 @@ public class ItemApiController {
 
     public long insert(Request request, Response response) {
         ValidationUtil.validateNotEmptyBody(request.body());
-        return this.itemService.insert(
-                gson.fromJson(request.body(), ItemCreateDto.class)
-        );
+        return this.itemService.insert(gson.fromJson(request.body(), ItemCreateDto.class));
     }
 
     public long update(Request request, Response response) {
@@ -40,26 +37,12 @@ public class ItemApiController {
     }
 
     public long delete(Request request, Response response) {
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
+        long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
         return this.itemService.delete(id);
     }
 
     public Object options(Request request, Response response) {
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
+        long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
         return gson.toJson(this.itemService.options(id));
     }
 }

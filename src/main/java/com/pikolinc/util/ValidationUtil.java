@@ -3,6 +3,7 @@ package com.pikolinc.util;
 import jakarta.validation.*;
 import com.pikolinc.exceptions.ValidationException;
 
+import java.lang.reflect.AccessibleObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +102,7 @@ public class ValidationUtil {
 
         // check if it's an empty bean (all fields null)
         boolean allFieldsNull = java.util.Arrays.stream(body.getClass().getDeclaredFields())
-                .peek(f -> f.setAccessible(true))
+                .peek(AccessibleObject::trySetAccessible)
                 .allMatch(f -> {
                     try {
                         return f.get(body) == null;
@@ -146,5 +147,6 @@ public class ValidationUtil {
             );
         }
     }
+
 
 }
