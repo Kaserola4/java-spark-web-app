@@ -68,4 +68,30 @@ public class ValidationUtil {
     public static <T> Set<ConstraintViolation<T>> getViolations(T object) {
         return validator.validate(object);
     }
+    /**
+     * Checks if the request body is empty or null.
+     * This is useful before running bean validation.
+     * @param body The request body object (after deserialization)
+     * @throws ValidationException if the body is null or has no properties
+     */
+    public static void validateNotEmptyBody(Object body) {
+        if (body == null) {
+            throw new ValidationException("Request body cannot be null or empty.");
+        }
+
+        // Optional: check if it's an empty bean (all fields null)
+        boolean allFieldsNull = java.util.Arrays.stream(body.getClass().getDeclaredFields())
+                .peek(f -> f.setAccessible(true))
+                .allMatch(f -> {
+                    try {
+                        return f.get(body) == null;
+                    } catch (IllegalAccessException e) {
+                        return true; // treat inaccessible as null
+                    }
+                });
+
+        if (allFieldsNull) {
+            throw new ValidationException("Request body cannot be empty.");
+        }
+    }
 }
