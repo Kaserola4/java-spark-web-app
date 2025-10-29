@@ -2,8 +2,8 @@ package com.pikolinc.controllers.api;
 
 import com.google.gson.Gson;
 import com.pikolinc.dto.request.UserCreateDto;
-import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.services.UserService;
+import com.pikolinc.util.ValidationUtil;
 import spark.Request;
 import spark.Response;
 
@@ -25,56 +25,23 @@ public class UserApiController {
     }
 
     public long insert(Request request, Response response) {
-        String body = request.body();
-
-        if (body == null || body.isBlank())
-            throw new ValidationException("Request body cannot be empty");
-
-        return this.userService.insert(
-                gson.fromJson(body, UserCreateDto.class)
-        );
+        ValidationUtil.validateNotEmptyBody(request.body());
+        return this.userService.insert(gson.fromJson(request.body(), UserCreateDto.class));
     }
 
     public long update(Request request, Response response) {
-        String body = request.body();
-
-        if (body == null || body.isBlank())
-            throw new ValidationException("Request body cannot be empty");
-
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        } catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
-        return this.userService.update(id, gson.fromJson(body, UserCreateDto.class));
+        ValidationUtil.validateNotEmptyBody(request.body());
+        long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
+        return this.userService.update(id, gson.fromJson(request.body(), UserCreateDto.class));
     }
 
     public long delete(Request request, Response response) {
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        }
-        catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
+        long id =  ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
         return this.userService.delete(id);
     }
 
     public Object options(Request request, Response response) {
-        long id;
-
-        try {
-            id = Long.parseLong(request.params(":id"));
-        }
-        catch (NumberFormatException e) {
-            throw new ValidationException("Invalid id format");
-        }
-
+        long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
         return gson.toJson(this.userService.options(id));
     }
 }
