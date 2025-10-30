@@ -30,7 +30,6 @@ public class RoutesInitializer implements Initializer {
         ItemApiController itemController = new ItemApiController(itemService);
         OfferApiController offerController = new OfferApiController(offerService);
 
-
         List<Router> routers = List.of(
                 new UserApiRouter(userController),
                 new ItemApiRouter(itemController),

@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://" + window.location.host + "/ws");
+const socket = new WebSocket("ws://" + window.location.host + "/ws/item?itemId=1");
 
 socket.onopen = () => document.getElementById("status").textContent = "Connected!";
 socket.onmessage = e => alert("Message: " + e.data);

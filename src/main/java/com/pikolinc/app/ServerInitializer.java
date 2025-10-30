@@ -1,9 +1,6 @@
 package com.pikolinc.app;
 
-import com.pikolinc.app.initializer.ExceptionHandlerInitializer;
-import com.pikolinc.app.initializer.Initializer;
-import com.pikolinc.app.initializer.MiddlewaresInitializer;
-import com.pikolinc.app.initializer.RoutesInitializer;
+import com.pikolinc.app.initializer.*;
 import com.pikolinc.app.initializer.config.DatabaseInitializer;
 import com.pikolinc.config.Env;
 import org.slf4j.Logger;
@@ -22,6 +19,7 @@ public class ServerInitializer {
 
         List<Initializer> initializers = List.of(
                 new DatabaseInitializer(),
+                new WebsocketInitializer(),
                 new ExceptionHandlerInitializer(),
                 new MiddlewaresInitializer(),
                 new RoutesInitializer()
