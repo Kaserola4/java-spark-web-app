@@ -1,6 +1,5 @@
 package com.pikolinc.services.impl;
 
-import com.google.gson.Gson;
 import com.pikolinc.dao.OfferDao;
 import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
@@ -10,6 +9,9 @@ import com.pikolinc.dto.response.OfferResponseDto;
 import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.exceptions.api.DuplicateResourceException;
+import com.pikolinc.infraestructure.events.EventBus;
+import com.pikolinc.infraestructure.events.EventType;
+import com.pikolinc.infraestructure.events.OfferCreatedEvent;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
@@ -59,7 +61,8 @@ public class OfferServiceImpl extends BaseService implements OfferService {
             logger.info("Insert offer with id {}", offerId);
 
             OfferResponseDto offerResponseDto = findById(offerId);
-            ItemOfferWebSocketHandler.broadcastToItem(Long.toString(offerCreateDto.itemId()), offerResponseDto);
+
+            EventBus.publish(new OfferCreatedEvent(offerResponseDto));
             return offerId;
         });
     }

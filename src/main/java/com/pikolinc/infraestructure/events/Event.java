@@ -1,4 +1,5 @@
-package com.pikolinc.infraestructure;
+package com.pikolinc.infraestructure.events;
+
 import lombok.Getter;
 
 @Getter
@@ -9,5 +10,5 @@ public abstract class Event<T> {
         this.payload = payload;
     }
 
-    public abstract String getType();
+    public abstract EventType getType();
 }

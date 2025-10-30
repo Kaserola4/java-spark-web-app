@@ -19,6 +19,7 @@ public class ServerInitializer {
 
         List<Initializer> initializers = List.of(
                 new DatabaseInitializer(),
+                new EventListenersInitializer(),
                 new WebsocketInitializer(),
                 new ExceptionHandlerInitializer(),
                 new MiddlewaresInitializer(),

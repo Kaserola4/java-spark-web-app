@@ -68,18 +68,19 @@ public class ItemOfferWebSocketHandler {
     }
 
     public static void broadcastToItem(String itemId, Object obj) {
-        var sessions = offerSessions.get(itemId);
+        Set<Session> sessions = offerSessions.get(itemId);
         if (sessions == null) return;
 
-        sessions.removeIf(s -> !s.isOpen());
-
-        for (Session s : sessions) {
-            try {
-                s.getRemote().sendString(gson.toJson(obj));
-            } catch (IOException e) {
-                logger.warn(e.getMessage());
+        for (Session s : Set.copyOf(sessions)) {
+            if (s.isOpen()) {
+                try {
+                    s.getRemote().sendString(gson.toJson(obj));
+                } catch (IOException e) {
+                    logger.warn("Failed to send message: {}", e.getMessage());
+                }
+            } else {
+                sessions.remove(s);
             }
         }
     }
-
 }
