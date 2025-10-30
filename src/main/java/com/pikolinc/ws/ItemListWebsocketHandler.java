@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemListWebsocketHandler {
     private static final ConcurrentHashMap<Session, String> sessions = new ConcurrentHashMap<>();
     private static final Logger logger =  LoggerFactory.getLogger(ItemListWebsocketHandler.class);
+
     @OnWebSocketConnect
     public void onConnect(Session session) {
         sessions.put(session, session.getRemoteAddress().toString());
