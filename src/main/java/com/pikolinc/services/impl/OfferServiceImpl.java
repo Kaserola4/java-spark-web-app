@@ -1,5 +1,6 @@
 package com.pikolinc.services.impl;
 
+import com.google.gson.Gson;
 import com.pikolinc.dao.OfferDao;
 import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
@@ -14,6 +15,7 @@ import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
+import com.pikolinc.ws.ItemOfferWebSocketHandler;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +58,8 @@ public class OfferServiceImpl extends BaseService implements OfferService {
 
             logger.info("Insert offer with id {}", offerId);
 
+            OfferResponseDto offerResponseDto = findById(offerId);
+            ItemOfferWebSocketHandler.broadcastToItem(Long.toString(offerCreateDto.itemId()), offerResponseDto);
             return offerId;
         });
     }

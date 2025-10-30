@@ -21,6 +21,12 @@ public class WebRouter implements Router {
 
     @Override
     public void registerRoutes() {
-        render("/", "index.mustache", null);
+        HashMap<String, Object> test = new HashMap<>();
+
+        Map map = new HashMap<>();
+        map.put("Hello", "World");
+        test.put("test", map);
+
+        render("/", "index.mustache", test);
     }
 }

@@ -1,5 +1,6 @@
 package com.pikolinc.ws;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemOfferWebSocketHandler {
     private static final ConcurrentHashMap<String, Set<Session>> offerSessions = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(ItemOfferWebSocketHandler.class);
+    private static final Gson gson = new Gson();
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
@@ -65,7 +67,7 @@ public class ItemOfferWebSocketHandler {
         return null;
     }
 
-    public static void broadcastToItem(String itemId, String message) {
+    public static void broadcastToItem(String itemId, Object obj) {
         var sessions = offerSessions.get(itemId);
         if (sessions == null) return;
 
@@ -73,7 +75,7 @@ public class ItemOfferWebSocketHandler {
 
         for (Session s : sessions) {
             try {
-                s.getRemote().sendString(message);
+                s.getRemote().sendString(gson.toJson(obj));
             } catch (IOException e) {
                 logger.warn(e.getMessage());
             }
