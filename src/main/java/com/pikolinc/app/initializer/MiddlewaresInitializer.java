@@ -16,6 +16,10 @@ public class MiddlewaresInitializer implements Initializer {
             logger.info("Incoming API request: {} {}", request.requestMethod(), request.pathInfo());
         });
 
+        Spark.before("/*", (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.type("text/html");
+        });
 
         Spark.afterAfter((request, response) -> {
             logger.info("Completed {} {} with status {}", request.requestMethod(), request.pathInfo(), response.status());

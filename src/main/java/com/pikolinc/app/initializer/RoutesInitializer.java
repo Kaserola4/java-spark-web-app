@@ -7,6 +7,7 @@ import com.pikolinc.routes.api.ItemApiRouter;
 import com.pikolinc.routes.api.OfferApiRouter;
 import com.pikolinc.routes.api.Router;
 import com.pikolinc.routes.api.UserApiRouter;
+import com.pikolinc.routes.web.WebRouter;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
@@ -20,6 +21,7 @@ import java.util.List;
 public class RoutesInitializer implements Initializer {
     @Override
     public void init() {
+
         UserService userService = new UserServiceImpl();
         ItemService itemService = new ItemServiceImpl();
         OfferService offerService = new OfferServiceImpl(itemService, userService);
@@ -28,12 +30,13 @@ public class RoutesInitializer implements Initializer {
         ItemApiController itemController = new ItemApiController(itemService);
         OfferApiController offerController = new OfferApiController(offerService);
 
+
         List<Router> routers = List.of(
                 new UserApiRouter(userController),
                 new ItemApiRouter(itemController),
-                new OfferApiRouter(offerController)
+                new OfferApiRouter(offerController),
+                new WebRouter()
         );
-
 
         routers.forEach(Router::registerRoutes);
 
