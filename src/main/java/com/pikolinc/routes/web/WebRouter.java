@@ -22,6 +22,5 @@ public class WebRouter implements Router {
     @Override
     public void registerRoutes() {
         render("/", "index.mustache", null);
-        render("/about", "about.mustache", null);
     }
 }
