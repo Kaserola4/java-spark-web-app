@@ -5,6 +5,8 @@ import com.pikolinc.dao.UserDao;
 import com.pikolinc.domain.Item;
 import com.pikolinc.dto.request.ItemCreateDto;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
+import com.pikolinc.infraestructure.events.EventBus;
+import com.pikolinc.infraestructure.events.ItemCreatedEvent;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
@@ -33,7 +35,7 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 
             logger.info("insert item id is {}", itemId);
 
-
+            EventBus.publish(new ItemCreatedEvent(itemEntity));
             return itemId;
         });
     }
