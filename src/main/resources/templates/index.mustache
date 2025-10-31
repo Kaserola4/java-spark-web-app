@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Java Spark Auctions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+          integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+</head>
+    <body>
+        <h1>Hello world!</h1>
+        <p id="status">Connecting...</p>
+    </body>
+
+    <script>
+        const ws = new WebSocket("ws://" + window.location.host + "/ws");
+
+        ws.onopen = () => {
+            document.getElementById("status").textContent = "Connected!"
+            ws.send(JSON.stringify({
+                action: "subscribe",
+                itemIds: [1,2,3,4]
+            }));
+        };
+        ws.onmessage = e => {
+            console.log("Message received")
+            console.log(JSON.parse(e.data))
+        };
+        ws.onclose = () => document.getElementById("status").textContent = "Disconnected";
+    </script>
+</html>

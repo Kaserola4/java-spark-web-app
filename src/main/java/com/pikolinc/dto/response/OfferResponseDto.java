@@ -1,6 +1,5 @@
 package com.pikolinc.dto.response;
 
-import com.pikolinc.domain.Item;
 import com.pikolinc.domain.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
