@@ -2,6 +2,8 @@ package com.pikolinc.ws;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.pikolinc.infraestructure.events.EventType;
+import com.pikolinc.ws.message.WebSocketMessage;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -66,18 +68,21 @@ public class ItemListWebsocketHandler {
         logger.info("Disconnected: {} ({})", session.getRemoteAddress(), reason);
     }
 
-    public static void broadcastNewItem(String itemId, Object obj) {
+    public static void brodCastMessage(EventType eventType, String itemId, Object obj) {
         Set<Session> sessions = itemSubscriptions.get(itemId);
 
         if (sessions == null) return;
 
         sessions.removeIf(s -> !s.isOpen());
 
-        String payload = gson.toJson(obj);
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .eventType(eventType)
+                .data(obj)
+                .build();
 
         for (Session s : sessions) {
             try {
-                s.getRemote().sendString(payload);
+                s.getRemote().sendString(gson.toJson(webSocketMessage));
             } catch (IOException e) {
                 logger.warn("Failed to send new item to {}: {}", s.getRemoteAddress(), e.getMessage());
             }

@@ -10,7 +10,7 @@ import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.exceptions.api.DuplicateResourceException;
 import com.pikolinc.infraestructure.events.EventBus;
-import com.pikolinc.infraestructure.events.OfferCreatedEvent;
+import com.pikolinc.infraestructure.events.offer.OfferCreatedEvent;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;

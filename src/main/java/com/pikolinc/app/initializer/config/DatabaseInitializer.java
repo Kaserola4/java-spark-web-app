@@ -5,7 +5,6 @@ import com.pikolinc.app.initializer.Initializer;
 import com.pikolinc.dao.ItemDao;
 import com.pikolinc.dao.OfferDao;
 import com.pikolinc.dao.UserDao;
-import com.pikolinc.domain.Offer;
 import lombok.Getter;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;

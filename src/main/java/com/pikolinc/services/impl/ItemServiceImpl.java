@@ -6,7 +6,9 @@ import com.pikolinc.domain.Item;
 import com.pikolinc.dto.request.ItemCreateDto;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.infraestructure.events.EventBus;
-import com.pikolinc.infraestructure.events.ItemCreatedEvent;
+import com.pikolinc.infraestructure.events.item.ItemCreatedEvent;
+import com.pikolinc.infraestructure.events.item.ItemDeletedEvent;
+import com.pikolinc.infraestructure.events.item.ItemUpdatedEvent;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
@@ -35,6 +37,7 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 
             logger.info("insert item id is {}", itemId);
 
+            itemEntity.setId(itemId);
             EventBus.publish(new ItemCreatedEvent(itemEntity));
             return itemId;
         });
@@ -72,6 +75,7 @@ public class ItemServiceImpl extends BaseService implements ItemService {
             long updated = dao.update(existingItem);
             logger.info("Item updated with id: {}", id);
 
+            EventBus.publish(new ItemUpdatedEvent(existingItem));
             return updated;
         });
     }
@@ -90,6 +94,7 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 
             logger.info("Item deleted with id: {}", id);
 
+            EventBus.publish(new ItemDeletedEvent(String.valueOf(deleted)));
             return deleted;
         });
     }
