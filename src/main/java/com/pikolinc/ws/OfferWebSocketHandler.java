@@ -1,6 +1,9 @@
 package com.pikolinc.ws;
 
 import com.google.gson.Gson;
+import com.pikolinc.dto.response.OfferResponseDto;
+import com.pikolinc.infraestructure.events.EventType;
+import com.pikolinc.ws.message.WebSocketMessage;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -15,9 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @WebSocket
-public class ItemOfferWebSocketHandler {
+public class OfferWebSocketHandler {
     private static final ConcurrentHashMap<String, Set<Session>> offerSessions = new ConcurrentHashMap<>();
-    private static Logger logger = LoggerFactory.getLogger(ItemOfferWebSocketHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(OfferWebSocketHandler.class);
     private static final Gson gson = new Gson();
 
     @OnWebSocketConnect
@@ -37,7 +40,7 @@ public class ItemOfferWebSocketHandler {
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
         Long itemId = getItemIdFromQuery(session);
-        if (itemId == null) return; // nothing to remove
+        if (itemId == null) return;
 
         Set<Session> sessions = offerSessions.get(itemId);
         if (sessions != null) sessions.remove(session);
@@ -67,14 +70,19 @@ public class ItemOfferWebSocketHandler {
         return null;
     }
 
-    public static void broadcastToItem(String itemId, Object obj) {
+    public static void broadCastMessage(EventType eventType, String itemId, Object obj) {
         Set<Session> sessions = offerSessions.get(itemId);
         if (sessions == null) return;
+
+        WebSocketMessage message = WebSocketMessage.builder()
+                .eventType(eventType)
+                .data(obj)
+                .build();
 
         for (Session s : Set.copyOf(sessions)) {
             if (s.isOpen()) {
                 try {
-                    s.getRemote().sendString(gson.toJson(obj));
+                    s.getRemote().sendString(gson.toJson(message));
                 } catch (IOException e) {
                     logger.warn("Failed to send message: {}", e.getMessage());
                 }

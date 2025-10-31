@@ -10,21 +10,16 @@ import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.exceptions.api.DuplicateResourceException;
 import com.pikolinc.infraestructure.events.EventBus;
-import com.pikolinc.infraestructure.events.EventType;
 import com.pikolinc.infraestructure.events.OfferCreatedEvent;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
 import com.pikolinc.services.base.BaseService;
 import com.pikolinc.util.ValidationUtil;
-import com.pikolinc.ws.ItemOfferWebSocketHandler;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 public class OfferServiceImpl extends BaseService implements OfferService {
     private static final Logger logger = LoggerFactory.getLogger(OfferServiceImpl.class);

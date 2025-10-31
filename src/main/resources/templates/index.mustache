@@ -12,12 +12,11 @@
     </body>
 
     <script>
-        const socket = new WebSocket("ws://" + window.location.host + "/ws");
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/item?itemId=1");
 
         socket.onopen = () => document.getElementById("status").textContent = "Connected!";
         socket.onmessage = e => {
-            let offerResponseDto = JSON.parse(e.data)
-            console.log(offerResponseDto)
+            console.log(JSON.parse(e.data))
         };
         socket.onclose = () => document.getElementById("status").textContent = "Disconnected";
 
