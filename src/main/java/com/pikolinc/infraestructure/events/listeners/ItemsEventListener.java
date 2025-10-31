@@ -5,28 +5,25 @@ import com.pikolinc.infraestructure.events.EventBus;
 import com.pikolinc.infraestructure.events.EventType;
 import com.pikolinc.ws.ItemListWebsocketHandler;
 
+import java.util.Map;
+
 public class ItemsEventListener implements EventListener {
     @Override
     public void listen() {
-        EventBus.subscribe(
-                EventType.ITEM_CREATED,
-                Item.class,
-                item ->
-                        ItemListWebsocketHandler.brodCastMessage(EventType.ITEM_CREATED, item.getId().toString(), item)
+        Map<EventType, Class<?>> eventMappings = Map.of(
+                EventType.ITEM_CREATED, Item.class,
+                EventType.ITEM_UPDATED, Item.class,
+                EventType.ITEM_DELETED, String.class
         );
 
-        EventBus.subscribe(
-                EventType.ITEM_UPDATED,
-                Item.class,
-                item ->
-                        ItemListWebsocketHandler.brodCastMessage(EventType.ITEM_UPDATED, item.getId().toString(), item)
-        );
-
-        EventBus.subscribe(
-                EventType.ITEM_DELETED,
-                String.class,
-                itemId ->
-                        ItemListWebsocketHandler.brodCastMessage(EventType.ITEM_DELETED, itemId, itemId)
-        );
+        eventMappings.forEach((type, clazz) -> {
+            if (clazz.equals(Item.class)) {
+                EventBus.subscribe(type, Item.class,
+                        item -> ItemListWebsocketHandler.brodCastMessage(type, item.getId().toString(), item));
+            } else if (clazz.equals(String.class)) {
+                EventBus.subscribe(type, String.class,
+                        id -> ItemListWebsocketHandler.brodCastMessage(type, id, id));
+            }
+        });
     }
 }

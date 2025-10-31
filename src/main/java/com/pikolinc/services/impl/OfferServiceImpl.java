@@ -9,8 +9,10 @@ import com.pikolinc.dto.response.OfferResponseDto;
 import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.exceptions.api.ApiResourceNotFoundException;
 import com.pikolinc.exceptions.api.DuplicateResourceException;
+import com.pikolinc.infraestructure.events.Event;
 import com.pikolinc.infraestructure.events.EventBus;
-import com.pikolinc.infraestructure.events.offer.OfferCreatedEvent;
+import com.pikolinc.infraestructure.events.EventType;
+import com.pikolinc.infraestructure.events.offer.*;
 import com.pikolinc.services.ItemService;
 import com.pikolinc.services.OfferService;
 import com.pikolinc.services.UserService;
@@ -96,8 +98,7 @@ public class OfferServiceImpl extends BaseService implements OfferService {
 
             long updated = dao.update(offer);
 
-            logger.info("Offer updated with id: {}", id);
-
+            EventBus.publish(new OfferUpdatedEvent(findById(id)));
             return updated;
         });
     }
@@ -116,6 +117,7 @@ public class OfferServiceImpl extends BaseService implements OfferService {
 
             logger.info("Deleted offer with id: {}", id);
 
+            EventBus.publish(new OfferDeletedEvent(id));
             return deleted;
         });
     }
@@ -153,19 +155,41 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     @Override
     public long acceptOffer(long id) {
         validateOfferStatus(id, OfferStatus.OPEN);
-        return withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.ACCEPTED.name()));
+        long result = withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.ACCEPTED.name()));
+
+        if (result == 1) {
+            logger.info("Offer with id {} accepted", id);
+            EventBus.publish(new OfferAcceptedEvent(id));
+        }
+        return result;
     }
 
     @Override
     public long rejectOffer(long id) {
         validateOfferStatus(id, OfferStatus.OPEN);
-        return withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.REJECTED.name()));
+
+        long result = withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.REJECTED.name()));
+
+        if (result == 1) {
+            logger.info("Offer with id {} rejected", id);
+            EventBus.publish(new OfferRejectedEvent(id));
+        }
+
+        return result;
     }
 
     @Override
     public long completeOffer(long id) {
         validateOfferStatus(id, OfferStatus.ACCEPTED);
-        return withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.COMPLETED.name()));
+
+        long result = withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.COMPLETED.name()));
+
+        if (result == 1) {
+            logger.info("Offer with id {} completed", id);
+            EventBus.publish(new OfferCompletedEvent(id));
+        }
+
+        return result;
     }
 
     @Override
@@ -175,14 +199,29 @@ public class OfferServiceImpl extends BaseService implements OfferService {
         if (offer.getStatus() != OfferStatus.OPEN && offer.getStatus() != OfferStatus.ACCEPTED)
             throw new ValidationException("Cannot cancel offer with status: " + offer.getStatus());
 
-        return withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.CANCELLED.name()));
+        long result = withDao(OfferDao.class, dao -> dao.updateStatus(id, OfferStatus.CANCELLED.name()));
+
+        if (result == 1) {
+            logger.info("Offer {} cancelled", id);
+            EventBus.publish(new OfferCancelledEvent(id));
+        }
+        return result;
     }
 
     @Override
     public long updateAmount(long id, OfferUpdateDto updateDto) {
         ValidationUtil.validate(updateDto);
         validateOfferStatus(id, OfferStatus.OPEN);
-        return withDao(OfferDao.class, dao -> dao.updateAmount(id, updateDto.getAmount()));
+
+        long result = withDao(OfferDao.class, dao -> dao.updateAmount(id, updateDto.getAmount()));
+
+        if (result == 1) {
+            OfferResponseDto dto = findById(id);
+            logger.info("Offer {} rebid to amount {}", id, dto.getAmount());
+            EventBus.publish(new OfferRebidEvent(dto));
+        }
+
+        return result;
     }
 
     private void validateOfferStatus(long id, OfferStatus expectedStatus) {
