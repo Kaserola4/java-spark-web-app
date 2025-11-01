@@ -1,29 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8" />
     <title>Java Spark Auctions</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-          integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+          integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+          crossorigin="anonymous">
+    <style>
+        body {
+            max-width: 900px;
+            margin: 40px auto;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        #status {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: #eee;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .no-items {
+            text-align: center;
+            color: #888;
+            padding: 1rem;
+        }
+
+        .pure-button-primary {
+            background-color: #0078e7;
+        }
+
+        .sort-arrow {
+            margin-left: 6px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+    </style>
 </head>
-    <body>
-        <h1>Hello world!</h1>
-        <p id="status">Connecting...</p>
-    </body>
+<body>
+<header>
+    <h1>Available Items</h1>
+    <span id="status">Connecting...</span>
+</header>
 
-    <script>
-        const ws = new WebSocket("ws://" + window.location.host + "/ws");
+<section>
+    <table id="items-table" class="pure-table pure-table-horizontal">
+        <thead>
+        <tr>
+            <th data-sort="name">Name <span class="sort-arrow"></span></th>
+            <th data-sort="description">Description <span class="sort-arrow"></span></th>
+            <th data-sort="price">Price <span class="sort-arrow"></span></th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="items-body">
+        {{#items}}
+            <tr data-id="{{id}}">
+                <td>{{name}}</td>
+                <td>{{description}}</td>
+                <td>${{price}}</td>
+                <td><button class="pure-button pure-button-primary" onclick="openOffers({{id}})">View Offers</button></td>
+            </tr>
+        {{/items}}
 
-        ws.onopen = () => {
-            document.getElementById("status").textContent = "Connected!"
-            ws.send(JSON.stringify({
-                action: "subscribe",
-                itemIds: [1,2,3,4]
-            }));
-        };
-        ws.onmessage = e => {
-            console.log("Message received")
-            console.log(JSON.parse(e.data))
-        };
-        ws.onclose = () => document.getElementById("status").textContent = "Disconnected";
-    </script>
+        {{^items}}
+            <tr id="no-items"><td colspan="4" class="no-items">No items found.</td></tr>
+        {{/items}}
+        </tbody>
+    </table>
+</section>
+
+<script>
+    const ws = new WebSocket("ws://" + window.location.host + "/ws");
+    const tbody = document.getElementById("items-body");
+
+    ws.onopen = () => {
+        document.getElementById("status").textContent = "Connected";
+        const ids = [...document.querySelectorAll('tr[data-id]')].map(el => el.dataset.id);
+        ws.send(JSON.stringify({action: "subscribe", itemIds: ids}));
+        ws.send(JSON.stringify({action: "subscribeAll"}));
+    };
+
+    ws.onmessage = event => {
+        const msg = JSON.parse(event.data);
+        const {eventType, data} = msg;
+
+        if (eventType === "ITEM_CREATED") addItem(data);
+        else if (eventType === "ITEM_UPDATED") updateItem(data);
+        else if (eventType === "ITEM_DELETED") removeItem(data);
+    };
+
+    ws.onclose = () => {
+        document.getElementById("status").textContent = "Disconnected";
+    };
+
+    function addItem(item) {
+        if (document.querySelector(`[data-id="${item.id}"]`)) return;
+        document.getElementById("no-items")?.remove();
+
+        const tr = document.createElement("tr");
+        tr.dataset.id = item.id;
+        tr.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.description || ""}</td>
+      <td>$${item.price}</td>
+      <td><button class="pure-button pure-button-primary" onclick="openOffers(${item.id})">View Offers</button></td>
+    `;
+        tbody.append(tr);
+    }
+
+    function updateItem(item) {
+        const tr = document.querySelector(`[data-id="${item.id}"]`);
+        if (!tr) return addItem(item);
+        tr.children[0].textContent = item.name;
+        tr.children[1].textContent = item.description || "";
+        tr.children[2].textContent = `$${item.price}`;
+    }
+
+    function removeItem(itemId) {
+        const tr = document.querySelector(`[data-id="${itemId}"]`);
+        if (tr) tr.remove();
+        if (!tbody.children.length) {
+            tbody.innerHTML = `<tr id="no-items"><td colspan="4" class="no-items">No items found.</td></tr>`;
+        }
+    }
+
+    function openOffers(itemId) {
+        window.location.href = `/offers?itemId=${itemId}`;
+    }
+
+    // --- Sorting logic ---
+    let sortDirection = 1;
+    let currentSortKey = null;
+
+    document.querySelectorAll("th[data-sort]").forEach(th => {
+        th.addEventListener("click", () => {
+            const key = th.dataset.sort;
+            if (currentSortKey === key) sortDirection *= -1;
+            else {
+                currentSortKey = key;
+                sortDirection = 1;
+            }
+
+            document.querySelectorAll(".sort-arrow").forEach(a => a.textContent = "");
+            th.querySelector(".sort-arrow").textContent = sortDirection === 1 ? "▲" : "▼";
+
+            const rows = [...tbody.querySelectorAll("tr[data-id]")];
+            rows.sort((a, b) => {
+                const aVal = a.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim().toLowerCase();
+                const bVal = b.querySelector(`td:nth-child(${th.cellIndex + 1})`).textContent.trim().toLowerCase();
+                return sortDirection * aVal.localeCompare(bVal, undefined, {numeric: true});
+            });
+            rows.forEach(r => tbody.append(r));
+        });
+    });
+</script>
+</body>
 </html>

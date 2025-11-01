@@ -94,7 +94,7 @@ public class ItemServiceImpl extends BaseService implements ItemService {
 
             logger.info("Item deleted with id: {}", id);
 
-            EventBus.publish(new ItemDeletedEvent(String.valueOf(deleted)));
+            EventBus.publish(new ItemDeletedEvent(id));
             return deleted;
         });
     }
