@@ -8,6 +8,6 @@ public class WebsocketInitializer implements Initializer{
     @Override
     public void init() {
         Spark.webSocket("/ws", ItemListWebsocketHandler.class);
-        Spark.webSocket("/ws/item", OfferWebSocketHandler.class);
+        Spark.webSocket("/ws/offers", OfferWebSocketHandler.class);
     }
 }

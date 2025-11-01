@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Offers for {{item.name}}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script defer src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+        th { background-color: #f4f4f4; cursor: pointer; }
+        tr:hover { background-color: #f9f9f9; }
+        .status { font-weight: bold; text-transform: capitalize; }
+    </style>
+</head>
+<body>
+<h1>Offers for {{item.name}}</h1>
+<p><strong>Description:</strong> {{item.description}}</p>
+<p><strong>Base price:</strong> ${{item.price}}</p>
+
+<table id="offersTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Created At</th>
+    </tr>
+    </thead>
+    <tbody id="offersBody">
+    {{#offers}}
+        <tr data-offer-id="{{id}}">
+            <td>{{id}}</td>
+            <td>{{userName}}</td>
+            <td>${{amount}}</td>
+            <td class="status">{{status}}</td>
+            <td>{{createdAt}}</td>
+        </tr>
+    {{/offers}}
+    {{^offers}}
+        <tr><td colspan="5" style="text-align:center;">No offers yet.</td></tr>
+    {{/offers}}
+    </tbody>
+</table>
+
+<script>
+    const itemId = "{{item.id}}";
+    const tableBody = document.getElementById("offersBody");
+
+    const ws = new WebSocket(`ws://${window.location.host}/ws/offers?itemId=${itemId}`);
+
+    ws.onopen = () => console.log("Connected to offers WebSocket for item", itemId);
+    ws.onclose = () => console.log("Disconnected from offers WebSocket");
+    ws.onerror = (err) => console.error("WebSocket error:", err);
+
+    ws.onmessage = (msg) => {
+        const { eventType, data } = JSON.parse(msg.data);
+        console.log("Offer event received:", eventType, data);
+
+        switch (eventType) {
+            case "OFFER_CREATED":
+            case "OFFER_UPDATED":
+            case "OFFER_REBID":
+                upsertOfferRow(data);
+                break;
+            case "OFFER_DELETED":
+            case "OFFER_REJECTED":
+            case "OFFER_CANCELLED":
+            case "OFFER_COMPLETED":
+                removeOfferRow(data);
+                break;
+        }
+    };
+
+    function upsertOfferRow(offer) {
+        let row = document.querySelector(`tr[data-offer-id='${offer.id}']`);
+        if (!row) {
+            row = document.createElement("tr");
+            row.dataset.offerId = offer.id;
+            row.innerHTML = `
+          <td>${offer.id}</td>
+          <td>${offer.userName}</td>
+          <td>$${offer.amount}</td>
+          <td class="status">${offer.status}</td>
+          <td>${offer.createdAt}</td>
+        `;
+            tableBody.appendChild(row);
+        } else {
+            row.children[1].textContent = offer.userName;
+            row.children[2].textContent = `$${offer.amount}`;
+            row.children[3].textContent = offer.status;
+            row.children[4].textContent = offer.createdAt;
+        }
+    }
+
+    function removeOfferRow(id) {
+        const row = document.querySelector(`tr[data-offer-id='${id}']`);
+        if (row) row.remove();
+    }
+</script>
+</body>
+</html>
