@@ -11,6 +11,6 @@ public class OfferUpdatedEvent extends Event<OfferResponseDto> {
 
     @Override
     public EventType getType() {
-        return null;
+        return EventType.OFFER_UPDATED;
     }
 }

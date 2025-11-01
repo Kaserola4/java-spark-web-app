@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OfferRebidDto {
     @NotNull(message = "amount is required")
-    @Positive (message =  "amount has to be positive")
+    @Positive(message = "amount has to be positive")
     private Double amount;
 }

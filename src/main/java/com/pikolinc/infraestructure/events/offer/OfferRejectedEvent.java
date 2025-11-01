@@ -10,6 +10,7 @@ public class OfferRejectedEvent extends Event<Long> {
 
     @Override
     public EventType getType() {
-        return null;
+        return
+                EventType.OFFER_REJECTED;
     }
 }

@@ -3,11 +3,16 @@ package com.pikolinc.infraestructure.events.listeners;
 import com.pikolinc.dto.response.OfferResponseDto;
 import com.pikolinc.infraestructure.events.EventBus;
 import com.pikolinc.infraestructure.events.EventType;
+import com.pikolinc.services.OfferService;
+import com.pikolinc.services.impl.ItemServiceImpl;
+import com.pikolinc.services.impl.OfferServiceImpl;
+import com.pikolinc.services.impl.UserServiceImpl;
 import com.pikolinc.ws.OfferWebSocketHandler;
 
 import java.util.Map;
 
 public class OffersEventListener implements EventListener {
+    private final OfferService offerService = new OfferServiceImpl(new ItemServiceImpl(), new UserServiceImpl());
 
     @Override
     public void listen() {
@@ -25,10 +30,13 @@ public class OffersEventListener implements EventListener {
         eventMappings.forEach((type, clazz) -> {
             if (clazz.equals(OfferResponseDto.class)) {
                 EventBus.subscribe(type, OfferResponseDto.class,
-                        offer -> OfferWebSocketHandler.broadCastMessage(type, offer.getId().toString(), offer));
+                        offer -> OfferWebSocketHandler.broadCastMessage(type, offer.getItemId().toString(), offer));
             } else if (clazz.equals(Long.class)) {
                 EventBus.subscribe(type, Long.class,
-                        id -> OfferWebSocketHandler.broadCastMessage(type, id.toString(), id));
+                        id -> {
+                            OfferResponseDto offer = offerService.findById(id);
+                            OfferWebSocketHandler.broadCastMessage(type, offer.getItemId().toString(), offer);
+                        });
             }
         });
     }

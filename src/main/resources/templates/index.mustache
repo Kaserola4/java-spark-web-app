@@ -7,107 +7,307 @@
           integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
           crossorigin="anonymous">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            max-width: 900px;
-            margin: 40px auto;
-            font-family: Arial, sans-serif;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #666, transparent);
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #444, transparent);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
 
         #status {
-            font-size: 0.9rem;
-            color: #777;
+            font-size: 0.85rem;
+            color: #888;
+            padding: 0.5rem 1.2rem;
+            background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+            border: 1px solid #333;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        #status.connected {
+            color: #6ee7b7;
+            border-color: #065f46;
+            background: linear-gradient(135deg, #064e3b, #065f46);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+            background: #0f0f0f;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         th, td {
-            padding: 0.8rem;
-            border-bottom: 1px solid #ddd;
+            padding: 1.2rem 1.5rem;
             text-align: left;
+            border-bottom: 1px solid #1a1a1a;
         }
 
         th {
-            background: #f5f5f5;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
+            color: #ffffff;
             cursor: pointer;
             user-select: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #666, transparent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         th:hover {
-            background: #eee;
+            background: linear-gradient(180deg, #333 0%, #2a2a2a 100%);
         }
 
-        tr:hover {
-            background: #fafafa;
+        th:hover::after {
+            opacity: 1;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, #1a1a1a, #1f1f1f);
+            border-left: 2px solid #666;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        td {
+            color: #b0b0b0;
+            font-size: 0.95rem;
         }
 
         .no-items {
             text-align: center;
-            color: #888;
-            padding: 1rem;
+            color: #555;
+            padding: 3rem;
+            font-size: 1rem;
+        }
+
+        .pure-button {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: 1px solid #2a2a2a;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pure-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
         }
 
         .pure-button-primary {
-            background-color: #0078e7;
+            border-color: #444;
+        }
+
+        .pure-button:hover {
+            border-color: #666;
+            box-shadow: 0 4px 15px rgba(102, 102, 102, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .pure-button:hover::before {
+            left: 100%;
+        }
+
+        .pure-button:active {
+            transform: translateY(0);
         }
 
         .sort-arrow {
             margin-left: 6px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             opacity: 0.7;
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            th, td {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Available Items</h1>
-    <span id="status">Connecting...</span>
-</header>
+<div class="container">
+    <header>
+        <h1>Available Items</h1>
+        <span id="status">Connecting...</span>
+    </header>
 
-<section>
-    <table id="items-table" class="pure-table pure-table-horizontal">
-        <thead>
-        <tr>
-            <th data-sort="name">Name <span class="sort-arrow"></span></th>
-            <th data-sort="description">Description <span class="sort-arrow"></span></th>
-            <th data-sort="price">Price <span class="sort-arrow"></span></th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody id="items-body">
-        {{#items}}
-            <tr data-id="{{id}}">
-                <td>{{name}}</td>
-                <td>{{description}}</td>
-                <td>${{price}}</td>
-                <td><button class="pure-button pure-button-primary" onclick="openOffers({{id}})">View Offers</button></td>
-            </tr>
-        {{/items}}
+    <section>
+        <div class="table-wrapper">
+            <table id="items-table" class="pure-table pure-table-horizontal">
+                <thead>
+                <tr>
+                    <th data-sort="name">Name <span class="sort-arrow"></span></th>
+                    <th data-sort="description">Description <span class="sort-arrow"></span></th>
+                    <th data-sort="price">Price <span class="sort-arrow"></span></th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="items-body">
+                {{#items}}
+                    <tr data-id="{{id}}">
+                        <td>{{name}}</td>
+                        <td>{{description}}</td>
+                        <td>${{price}}</td>
+                        <td><button class="pure-button pure-button-primary" onclick="openOffers({{id}})">View Offers</button></td>
+                    </tr>
+                {{/items}}
 
-        {{^items}}
-            <tr id="no-items"><td colspan="4" class="no-items">No items found.</td></tr>
-        {{/items}}
-        </tbody>
-    </table>
-</section>
+                {{^items}}
+                    <tr id="no-items"><td colspan="4" class="no-items">No items found.</td></tr>
+                {{/items}}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
 
 <script>
     const ws = new WebSocket("ws://" + window.location.host + "/ws");
     const tbody = document.getElementById("items-body");
+    const statusEl = document.getElementById("status");
 
     ws.onopen = () => {
-        document.getElementById("status").textContent = "Connected";
+        statusEl.textContent = "Connected";
+        statusEl.classList.add("connected");
         const ids = [...document.querySelectorAll('tr[data-id]')].map(el => el.dataset.id);
         ws.send(JSON.stringify({action: "subscribe", itemIds: ids}));
         ws.send(JSON.stringify({action: "subscribeAll"}));
@@ -123,7 +323,8 @@
     };
 
     ws.onclose = () => {
-        document.getElementById("status").textContent = "Disconnected";
+        statusEl.textContent = "Disconnected";
+        statusEl.classList.remove("connected");
     };
 
     function addItem(item) {
@@ -158,10 +359,9 @@
     }
 
     function openOffers(itemId) {
-        window.location.href = `/offers?itemId=${itemId}`;
+        window.location.href = `/items/${itemId}/offers`;
     }
 
-    // --- Sorting logic ---
     let sortDirection = 1;
     let currentSortKey = null;
 
