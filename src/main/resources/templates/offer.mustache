@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8" />
     <title>Offers for {{item.name}}</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-    <script defer src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -165,6 +163,59 @@
             background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
             color: #888;
             border: 1px solid #333;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            border: 1px solid #2a2a2a;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            color: #b0b0b0;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: #666;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 102, 102, 0.2);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn.delete {
+            border-color: #5a1f1f;
+            background: linear-gradient(135deg, #3a1515, #2a1010);
+            color: #ff6b6b;
+        }
+
+        .action-btn.delete:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .action-btn.accept {
+            border-color: #1f5a3a;
+            background: linear-gradient(135deg, #153a25, #102a1a);
+            color: #6bff9b;
+        }
+
+        .action-btn.accept:hover {
+            border-color: #6bff9b;
+            box-shadow: 0 2px 8px rgba(107, 255, 155, 0.3);
         }
 
         /* Sticky offer form */
@@ -337,6 +388,7 @@
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Created At</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody id="offersBody">
@@ -347,10 +399,17 @@
                     <td>${{amount}}</td>
                     <td><span class="status">{{status}}</span></td>
                     <td>{{createdAt}}</td>
+                    <td class="actions-cell">
+                        <button class="action-btn accept" onclick="updateOfferStatus({{id}}, 'accept')">Accept</button>
+                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'reject')">Reject</button>
+                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'cancel')">Cancel</button>
+                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'complete')">Complete</button>
+                        <button class="action-btn delete" onclick="deleteOffer({{id}})">Delete</button>
+                    </td>
                 </tr>
             {{/offers}}
             {{^offers}}
-                <tr><td colspan="5" class="empty-state">No offers yet</td></tr>
+                <tr><td colspan="6" class="empty-state">No offers yet</td></tr>
             {{/offers}}
             </tbody>
         </table>
@@ -418,14 +477,21 @@
             row.innerHTML = `
                 <td>${offer.id}</td>
                 <td>${offer.userName}</td>
-                <td>$${offer.amount}</td>
+                <td>${offer.amount}</td>
                 <td><span class="status">${offer.status}</span></td>
                 <td>${offer.createdAt}</td>
+                <td class="actions-cell">
+                    <button class="action-btn accept" onclick="updateOfferStatusAction(${offer.id}, 'accept')">Accept</button>
+                    <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'reject')">Reject</button>
+                    <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'cancel')">Cancel</button>
+                    <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'complete')">Complete</button>
+                    <button class="action-btn delete" onclick="deleteOffer(${offer.id})">Delete</button>
+                </td>
             `;
             tableBody.appendChild(row);
         } else {
             row.querySelector("td:nth-child(2)").textContent = offer.userName;
-            row.querySelector("td:nth-child(3)").textContent = `$${offer.amount}`;
+            row.querySelector("td:nth-child(3)").textContent = `${offer.amount}`;
             row.querySelector(".status").textContent = offer.status;
             row.querySelector("td:nth-child(5)").textContent = offer.createdAt;
         }
@@ -434,6 +500,37 @@
     function removeOfferRow(id) {
         const row = document.querySelector(`tr[data-offer-id='${id}']`);
         if (row) row.remove();
+    }
+
+    // Actions
+    async function updateOfferStatusAction(offerId, status) {
+        try {
+            const res = await fetch(`/api/v1/offers/${offerId}/${status}`, {
+                method: "PUT"
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            console.log(`✅ Offer ${offerId} status updated to ${status}`);
+        } catch (err) {
+            console.error(`❌ Error updating offer status:`, err);
+            alert(`Failed to update offer status. Check console for details.`);
+        }
+    }
+
+    async function deleteOffer(offerId) {
+        if (!confirm(`Are you sure you want to delete offer #${offerId}?`)) return;
+
+        try {
+            const res = await fetch(`/api/v1/offers/${offerId}`, {
+                method: "DELETE"
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            console.log(`✅ Offer ${offerId} deleted`);
+        } catch (err) {
+            console.error(`❌ Error deleting offer:`, err);
+            alert(`Failed to delete offer. Check console for details.`);
+        }
     }
 
     // ---- Table sorting logic ----
