@@ -1,9 +1,6 @@
 package com.pikolinc.app;
 
-import com.pikolinc.app.initializer.ExceptionHandlerInitializer;
-import com.pikolinc.app.initializer.Initializer;
-import com.pikolinc.app.initializer.MiddlewaresInitializer;
-import com.pikolinc.app.initializer.RoutesInitializer;
+import com.pikolinc.app.initializer.*;
 import com.pikolinc.app.initializer.config.DatabaseInitializer;
 import com.pikolinc.config.Env;
 import org.slf4j.Logger;
@@ -18,9 +15,12 @@ public class ServerInitializer {
     public static void run() {
         int port = Integer.parseInt(Env.get("PORT", "8080"));
         Spark.port(port);
+        Spark.staticFiles.location("/public");
 
         List<Initializer> initializers = List.of(
                 new DatabaseInitializer(),
+                new EventListenersInitializer(),
+                new WebsocketInitializer(),
                 new ExceptionHandlerInitializer(),
                 new MiddlewaresInitializer(),
                 new RoutesInitializer()
@@ -31,6 +31,9 @@ public class ServerInitializer {
                 logger.info("🚀 Running initializer: {}", initializer.name());
                 initializer.init();
             }
+
+            Spark.init();
+            Spark.awaitInitialization();
         } catch (Exception e) {
             logger.error("❌ Server failed to start due to initializer error", e);
             Spark.stop();

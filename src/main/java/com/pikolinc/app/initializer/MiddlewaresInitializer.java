@@ -9,11 +9,15 @@ public class MiddlewaresInitializer implements Initializer {
 
     @Override
     public void init() {
-        Spark.before((request, response) -> {
+        Spark.before("/*", (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.type("text/html");
+        });
+        Spark.before("/api/v1/*", (request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
             response.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-            response.header("Content-Type", "application/json");
-            logger.info("Incoming request: {} {}", request.requestMethod(), request.pathInfo());
+            response.type("application/json");
+            logger.info("Incoming API request: {} {}", request.requestMethod(), request.pathInfo());
         });
 
 

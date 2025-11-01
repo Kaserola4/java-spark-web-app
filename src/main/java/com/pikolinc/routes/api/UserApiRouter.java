@@ -15,7 +15,7 @@ public class UserApiRouter implements Router {
 
     @Override
     public void registerRoutes() {
-        logger.info("UserApiRouter registeredRoutes");
+        logger.info("Registering routes for UserApiController");
         Spark.path("/api/v1", () -> {
             Spark.get("/users", userController::findAll);
             Spark.get("/users/:id", userController::findById);
