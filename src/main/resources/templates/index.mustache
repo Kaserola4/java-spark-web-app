@@ -88,6 +88,88 @@
             background: linear-gradient(135deg, #064e3b, #065f46);
         }
 
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .filter-input {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: 1px solid #2a2a2a;
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            color: #ffffff;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #555;
+            box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.2);
+            background: #1f1f1f;
+        }
+
+        .filter-input::placeholder {
+            color: #555;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: 1px solid #2a2a2a;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .filter-btn:hover {
+            border-color: #666;
+            box-shadow: 0 4px 15px rgba(102, 102, 102, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .filter-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-info {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .results-info span {
+            color: #fff;
+            font-weight: 500;
+        }
+
         .table-wrapper {
             overflow-x: auto;
             border-radius: 12px;
@@ -271,6 +353,30 @@
     </header>
 
     <section>
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filter-name">Search Name</label>
+                <input type="text" id="filter-name" class="filter-input" placeholder="Item name...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-description">Search Description</label>
+                <input type="text" id="filter-description" class="filter-input" placeholder="Description...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-min-price">Min Price</label>
+                <input type="number" id="filter-min-price" class="filter-input" placeholder="$0" min="0">
+            </div>
+            <div class="filter-group">
+                <label for="filter-max-price">Max Price</label>
+                <input type="number" id="filter-max-price" class="filter-input" placeholder="Any" min="0">
+            </div>
+            <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
+        </div>
+
+        <div class="results-info">
+            Showing <span id="visible-count">0</span> of <span id="total-count">0</span> items
+        </div>
+
         <div class="table-wrapper">
             <table id="items-table" class="pure-table pure-table-horizontal">
                 <thead>
@@ -305,12 +411,24 @@
     const tbody = document.getElementById("items-body");
     const statusEl = document.getElementById("status");
 
+    // Filter elements
+    const filterName = document.getElementById("filter-name");
+    const filterDescription = document.getElementById("filter-description");
+    const filterMinPrice = document.getElementById("filter-min-price");
+    const filterMaxPrice = document.getElementById("filter-max-price");
+
+    // Add event listeners for real-time filtering
+    [filterName, filterDescription, filterMinPrice, filterMaxPrice].forEach(input => {
+        input.addEventListener("input", applyFilters);
+    });
+
     ws.onopen = () => {
         statusEl.textContent = "Connected";
         statusEl.classList.add("connected");
         const ids = [...document.querySelectorAll('tr[data-id]')].map(el => el.dataset.id);
         ws.send(JSON.stringify({action: "subscribe", itemIds: ids}));
         ws.send(JSON.stringify({action: "subscribeAll"}));
+        updateCounts();
     };
 
     ws.onmessage = event => {
@@ -333,21 +451,29 @@
 
         const tr = document.createElement("tr");
         tr.dataset.id = item.id;
+        tr.dataset.name = item.name.toLowerCase();
+        tr.dataset.description = (item.description || "").toLowerCase();
+        tr.dataset.price = item.price;
         tr.innerHTML = `
       <td>${item.name}</td>
       <td>${item.description || ""}</td>
-      <td>$${item.price}</td>
+      <td>${item.price}</td>
       <td><button class="pure-button pure-button-primary" onclick="openOffers(${item.id})">View Offers</button></td>
     `;
         tbody.append(tr);
+        applyFilters();
     }
 
     function updateItem(item) {
         const tr = document.querySelector(`[data-id="${item.id}"]`);
         if (!tr) return addItem(item);
+        tr.dataset.name = item.name.toLowerCase();
+        tr.dataset.description = (item.description || "").toLowerCase();
+        tr.dataset.price = item.price;
         tr.children[0].textContent = item.name;
         tr.children[1].textContent = item.description || "";
-        tr.children[2].textContent = `$${item.price}`;
+        tr.children[2].textContent = `${item.price}`;
+        applyFilters();
     }
 
     function removeItem(itemId) {
@@ -356,10 +482,54 @@
         if (!tbody.children.length) {
             tbody.innerHTML = `<tr id="no-items"><td colspan="4" class="no-items">No items found.</td></tr>`;
         }
+        updateCounts();
     }
 
     function openOffers(itemId) {
         window.location.href = `/items/${itemId}/offers`;
+    }
+
+    function applyFilters() {
+        const nameFilter = filterName.value.toLowerCase().trim();
+        const descFilter = filterDescription.value.toLowerCase().trim();
+        const minPrice = filterMinPrice.value ? parseFloat(filterMinPrice.value) : null;
+        const maxPrice = filterMaxPrice.value ? parseFloat(filterMaxPrice.value) : null;
+
+        const rows = tbody.querySelectorAll("tr[data-id]");
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const name = row.dataset.name || "";
+            const description = row.dataset.description || "";
+            const price = parseFloat(row.dataset.price);
+
+            let visible = true;
+
+            if (nameFilter && !name.includes(nameFilter)) visible = false;
+            if (descFilter && !description.includes(descFilter)) visible = false;
+            if (minPrice !== null && price < minPrice) visible = false;
+            if (maxPrice !== null && price > maxPrice) visible = false;
+
+            row.style.display = visible ? "" : "none";
+            if (visible) visibleCount++;
+        });
+
+        updateCounts();
+    }
+
+    function clearFilters() {
+        filterName.value = "";
+        filterDescription.value = "";
+        filterMinPrice.value = "";
+        filterMaxPrice.value = "";
+        applyFilters();
+    }
+
+    function updateCounts() {
+        const allRows = tbody.querySelectorAll("tr[data-id]");
+        const visibleRows = tbody.querySelectorAll("tr[data-id]:not([style*='display: none'])");
+        document.getElementById("total-count").textContent = allRows.length;
+        document.getElementById("visible-count").textContent = visibleRows.length;
     }
 
     let sortDirection = 1;
