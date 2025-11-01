@@ -22,10 +22,13 @@ public class ItemListWebsocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(ItemListWebsocketHandler.class);
     private static final Gson gson = new Gson();
 
-    // itemId -> sessions
+    // Sessions subscribed to all global events (e.g., ITEM_CREATED)
+    private static final Set<Session> globalSubscribers = ConcurrentHashMap.newKeySet();
+
+    // itemId -> sessions subscribed to that item
     private static final Map<String, Set<Session>> itemSubscriptions = new ConcurrentHashMap<>();
 
-    // session -> itemIds
+    // session -> itemIds it subscribed to
     private static final Map<Session, Set<String>> sessionSubscriptions = new ConcurrentHashMap<>();
 
     @OnWebSocketConnect
@@ -44,6 +47,12 @@ public class ItemListWebsocketHandler {
                 json.getAsJsonArray("itemIds").forEach(id -> subscribe(session, id.getAsString()));
             } else if ("unsubscribe".equalsIgnoreCase(action)) {
                 json.getAsJsonArray("itemIds").forEach(id -> unsubscribe(session, id.getAsString()));
+            } else if ("subscribeAll".equalsIgnoreCase(action)) {
+                globalSubscribers.add(session);
+                logger.info("{} subscribed to ALL items", session.getRemoteAddress().getHostName());
+            } else if ("unsubscribeAll".equalsIgnoreCase(action)) {
+                globalSubscribers.remove(session);
+                logger.info("{} unsubscribed from ALL items", session.getRemoteAddress().getHostName());
             } else {
                 logger.warn("Unknown action from {}: {}", session.getRemoteAddress(), message);
             }
@@ -52,39 +61,65 @@ public class ItemListWebsocketHandler {
         }
     }
 
-
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
+        // Remove session from item subscriptions
         Set<String> items = sessionSubscriptions.get(session);
-
         if (items != null) {
             items.forEach(itemId -> {
                 Set<Session> sessions = itemSubscriptions.get(itemId);
-
                 if (sessions != null) sessions.remove(session);
             });
         }
 
+        // Remove from globals
+        globalSubscribers.remove(session);
+        sessionSubscriptions.remove(session);
+
         logger.info("Disconnected: {} ({})", session.getRemoteAddress(), reason);
     }
 
-    public static void brodCastMessage(EventType eventType, String itemId, Object obj) {
+    /**
+     * Broadcasts a message to all sessions subscribed to a specific item.
+     */
+    public static void broadcastMessage(EventType eventType, String itemId, Object obj) {
         Set<Session> sessions = itemSubscriptions.get(itemId);
-
-        if (sessions == null) return;
+        if (sessions == null || sessions.isEmpty()) return;
 
         sessions.removeIf(s -> !s.isOpen());
 
-        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+        WebSocketMessage message = WebSocketMessage.builder()
                 .eventType(eventType)
                 .data(obj)
                 .build();
 
         for (Session s : sessions) {
             try {
-                s.getRemote().sendString(gson.toJson(webSocketMessage));
+                s.getRemote().sendString(gson.toJson(message));
             } catch (IOException e) {
-                logger.warn("Failed to send new item to {}: {}", s.getRemoteAddress(), e.getMessage());
+                logger.warn("Failed to send item message to {}: {}", s.getRemoteAddress(), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Broadcasts a message to all global subscribers (e.g., for ITEM_CREATED).
+     */
+    public static void broadcastGlobal(EventType eventType, Object obj) {
+        if (globalSubscribers.isEmpty()) return;
+
+        globalSubscribers.removeIf(s -> !s.isOpen());
+
+        WebSocketMessage message = WebSocketMessage.builder()
+                .eventType(eventType)
+                .data(obj)
+                .build();
+
+        for (Session s : globalSubscribers) {
+            try {
+                s.getRemote().sendString(gson.toJson(message));
+            } catch (IOException e) {
+                logger.warn("Failed to send global event to {}: {}", s.getRemoteAddress(), e.getMessage());
             }
         }
     }

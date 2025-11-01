@@ -3,8 +3,8 @@ package com.pikolinc.infraestructure.events.item;
 import com.pikolinc.infraestructure.events.Event;
 import com.pikolinc.infraestructure.events.EventType;
 
-public class ItemDeletedEvent extends Event<String> {
-    public ItemDeletedEvent(String payload) {
+public class ItemDeletedEvent extends Event<Long> {
+    public ItemDeletedEvent(long payload) {
         super(payload);
     }
 
