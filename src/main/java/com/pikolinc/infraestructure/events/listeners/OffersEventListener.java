@@ -25,7 +25,7 @@ public class OffersEventListener implements EventListener {
         eventMappings.forEach((type, clazz) -> {
             if (clazz.equals(OfferResponseDto.class)) {
                 EventBus.subscribe(type, OfferResponseDto.class,
-                        offer -> OfferWebSocketHandler.broadCastMessage(type, offer.getId().toString(), offer));
+                        offer -> OfferWebSocketHandler.broadCastMessage(type, offer.getItemId().toString(), offer));
             } else if (clazz.equals(Long.class)) {
                 EventBus.subscribe(type, Long.class,
                         id -> OfferWebSocketHandler.broadCastMessage(type, id.toString(), id));
