@@ -11,6 +11,6 @@ public class OfferRebidEvent extends Event<OfferResponseDto> {
 
     @Override
     public EventType getType() {
-        return null;
+        return EventType.OFFER_REBID;
     }
 }
