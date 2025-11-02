@@ -13,6 +13,14 @@ import spark.Response;
 
 import java.util.Map;
 
+/**
+ * REST controller for offers (bids).
+ *
+ * <p>Supports filtering by user, item, and status, and handles status transitions
+ * (accept, reject, complete, cancel) and rebids.
+ *
+ * @see com.pikolinc.domain.OfferStatus
+ */
 public class OfferApiController {
     private final OfferService offerService;
     private final Gson gson;
