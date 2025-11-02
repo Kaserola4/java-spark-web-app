@@ -7,6 +7,11 @@ import com.pikolinc.util.ValidationUtil;
 import spark.Request;
 import spark.Response;
 
+/**
+ * REST controller for users.
+ *
+ * <p>Delegates user CRUD operations to {@link com.pikolinc.services.UserService}.
+ */
 public class UserApiController {
     private final UserService userService;
     private final Gson gson;

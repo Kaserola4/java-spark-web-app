@@ -10,6 +10,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
+/**
+ * Helper utilities for validating request bodies and path parameters using Jakarta Validation.
+ * <br>Public helpers:
+ * <ul>
+ *     <li>validate(Object dto): validates bean constraints and throws ValidationException on failure</li>
+ *     <li>validateNotEmptyBody(String body): ensures request body is not empty</li>
+ *     <li>validateParamFormat(String name, String value, Class<T> targetClass): parses and validates path params</li>
+ * </ul>
+ */
 public class ValidationUtil {
     private static final Validator validator;
     private static final Map<Class<?>, Function<String, ?>> PARSERS = new HashMap<>();

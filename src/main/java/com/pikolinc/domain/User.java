@@ -5,6 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Domain model representing an application user.
+ *<br>
+ * Fields:
+ * <ul>
+ *     <li>id,</li>
+ *     <li>name</li>
+ *     <li>email</li>
+ *     <li>age</li>
+ * </ul>
+ */
 @Data
 @Builder
 @NoArgsConstructor

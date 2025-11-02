@@ -12,6 +12,11 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JDBI SQL object for Offer persistence and complex queries returning enriched DTOs.
+ *
+ * <p>Queries join users and items producing {@link com.pikolinc.dto.response.OfferResponseDto}.
+ */
 @RegisterBeanMapper(OfferResponseDto.class)
 public interface OfferDao {
     @SqlUpdate("""

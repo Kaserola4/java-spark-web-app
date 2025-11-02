@@ -4,6 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
 
+/**
+ * Registers application-wide middlewares and logging hooks.
+ *
+ * <p>Sets CORS headers for API routes, content type negotiation, and logs incoming requests
+ * and response completion information.
+ */
+
 public class MiddlewaresInitializer implements Initializer {
     private static final Logger logger = LoggerFactory.getLogger(MiddlewaresInitializer.class);
 

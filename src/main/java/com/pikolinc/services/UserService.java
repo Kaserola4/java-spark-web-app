@@ -5,6 +5,11 @@ import com.pikolinc.domain.User;
 
 import java.util.List;
 
+/**
+ * Service interface for User operations.
+ *
+ * @see com.pikolinc.services.impl.UserServiceImpl
+ */
 public interface UserService {
     long insert(UserCreateDto dto);
     List<User> findAll();

@@ -17,6 +17,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * WebSocket handler that manages offer subscriptions per item and broadcasts messages.
+ *
+ * <br>Provides:
+ * <ul>
+ *     <li> onConnect, onClose, onMessage lifecycle methods</li>
+ *     <li>broadcastMessage(EventType, String itemId, Object payload) for item-scoped updates</li>
+ * </ul>
+ */
 @WebSocket
 public class OfferWebSocketHandler {
     private static final ConcurrentHashMap<String, Set<Session>> offerSessions = new ConcurrentHashMap<>();

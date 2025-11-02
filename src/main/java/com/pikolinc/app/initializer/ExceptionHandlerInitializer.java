@@ -12,6 +12,12 @@ import spark.Spark;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configures global exception handlers for the Spark application.
+ *
+ * <p>Maps domain and framework exceptions to HTTP responses (400, 404, 409, 500).
+ * Serializes error responses as JSON.
+ */
 public class ExceptionHandlerInitializer implements Initializer {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerInitializer.class);
     private static final Gson gson = new Gson();
