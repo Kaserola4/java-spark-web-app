@@ -24,6 +24,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Concrete implementation of {@link OfferService}.
+ *
+ * <p>Uses {@link com.pikolinc.dao.OfferDao} via {@link com.pikolinc.services.base.BaseService#withDao}.
+ * <br>
+ * Publishes Offer events to {@link com.pikolinc.infraestructure.events.EventBus}.
+ */
 public class OfferServiceImpl extends BaseService implements OfferService {
     private static final Logger logger = LoggerFactory.getLogger(OfferServiceImpl.class);
     private final ItemService itemService;
