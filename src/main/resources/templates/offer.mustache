@@ -232,7 +232,7 @@
             width: 60px;
             height: 60px;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1003;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
             font-size: 1.5rem;
             align-items: center;
@@ -264,7 +264,7 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
-            z-index: 998;
+            z-index: 1002;
         }
 
         #new-offer-form::before {
@@ -551,7 +551,7 @@
 
             .mobile-toggle {
                 display: flex;
-                bottom: 110px;
+                bottom: 120px;
             }
 
             .sidebar {
@@ -735,7 +735,7 @@
 
 <!-- Sticky form -->
 <form id="new-offer-form">
-    <input type="number" name="userId" placeholder="User ID" min="1" required readonly style="display: none;" />
+    <input type="number" name="userId" placeholder="User ID" min="1" required style="display: none;" />
     <input type="number" name="amount" placeholder="Offer amount" min="1" required />
     <button type="submit">Create Offer</button>
 </form>
@@ -811,9 +811,13 @@
         document.querySelector(`[data-user-id="${userId}"]`).classList.add('selected');
 
         // Update form
-        document.querySelector('#new-offer-form input[name="userId"]').value = userId;
+        const userIdInput = document.querySelector('#new-offer-form input[name="userId"]');
+        userIdInput.value = userId;
 
-        console.log(`✅ Selected user ID: ${userId}`);
+        // Enable amount input on mobile
+        const amountInput = document.querySelector('#new-offer-form input[name="amount"]');
+        amountInput.disabled = false;
+        amountInput.focus();
 
         // Close sidebar on mobile after selection
         if (window.innerWidth <= 1024) {
