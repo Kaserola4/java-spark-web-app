@@ -1,7 +1,6 @@
 package com.pikolinc.services;
 
 
-import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
 import com.pikolinc.dto.request.OfferRebidDto;
@@ -10,6 +9,11 @@ import com.pikolinc.dto.response.OfferResponseDto;
 
 import java.util.List;
 
+/**
+ * Service interface for Offer operations.
+ *
+ * @see com.pikolinc.services.impl.OfferServiceImpl
+ */
 public interface OfferService {
     long insert(OfferCreateDto offerCreateDto);
     List<OfferResponseDto> findAll();
