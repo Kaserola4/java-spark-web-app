@@ -23,6 +23,17 @@ public interface UserDao {
             """)
     void createTable();
 
+    @SqlUpdate("""
+        INSERT INTO users (name, email, age) VALUES
+        ('John Doe', 'john.doe@example.com', 28),
+        ('Jane Smith', 'jane.smith@example.com', 34),
+        ('Mike Johnson', 'mike.johnson@example.com', 42),
+        ('Sarah Williams', 'sarah.williams@example.com', 25),
+        ('David Brown', 'david.brown@example.com', 31)
+    """)
+    void insertSampleData();
+
+
 
     @SqlUpdate("INSERT INTO users (name, email, age) VALUES (:name, :email, :age)")
     @GetGeneratedKeys
