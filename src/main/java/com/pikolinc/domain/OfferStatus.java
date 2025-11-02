@@ -1,5 +1,24 @@
 package com.pikolinc.domain;
 
+/**
+ * Enum representing possible states of an Offer.
+ *<br>
+ * Values:
+ * <ul>
+ *     <li>OPEN: offer is active</li>
+ *     <li>ACCEPTED: offer accepted</li>
+ *     <li>REJECTED: offer rejected</li>
+ *     <li>COMPLETED: transaction completed</li>
+ *     <li>CANCELLED: offer cancelled</li>
+ * </ul>
+ * <br>
+ * Utility methods:
+ * <ul>
+ *     <li>isActive(): true for OPEN</li>
+ *     <li>isFinal(): true for accepted/rejected/completed/cancelled</li>
+ * </ul>
+
+ */
 public enum OfferStatus {
     OPEN("Open", "Offer is active and awaiting response"),
     ACCEPTED("Accepted", "Offer has been accepted"),
