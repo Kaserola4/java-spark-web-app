@@ -18,7 +18,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Concrete implementation of {@link ItemService}.
+ *
+ * <p>Uses {@link com.pikolinc.dao.ItemDao} via {@link com.pikolinc.services.base.BaseService#withDao}.
+ * <br>
+ * Publishes item events to {@link com.pikolinc.infraestructure.events.EventBus}.
+ */
 public class ItemServiceImpl extends BaseService implements ItemService {
     private static final Logger logger = LoggerFactory.getLogger(ItemServiceImpl.class);
 

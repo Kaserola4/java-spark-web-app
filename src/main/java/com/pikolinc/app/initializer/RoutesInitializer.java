@@ -18,6 +18,16 @@ import spark.Spark;
 
 import java.util.List;
 
+/**
+ * Registers all HTTP and web routes for the application.
+ *
+ * <p>Wires controllers to routers and registers API and web routes. Also registers a /health route.
+ *
+ * @see com.pikolinc.routes.api.UserApiRouter
+ * @see com.pikolinc.routes.api.ItemApiRouter
+ * @see com.pikolinc.routes.api.OfferApiRouter
+ * @see com.pikolinc.routes.web.WebRouter
+ */
 public class RoutesInitializer implements Initializer {
     @Override
     public void init() {

@@ -9,6 +9,14 @@ import lombok.Getter;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
+/**
+ * Initializes the application's database connection and schema.
+ *
+ * <p>Creates a Jdbi instance (H2 in-memory by default) and installs SQL object plugin.
+ * Then it ensures database tables exist and inserts sample data for users and items.
+ *
+ * @implNote The JDBI instance is exposed via a getter for service classes to use.
+ */
 public class DatabaseInitializer implements Initializer {
     @Getter
     private static Jdbi jdbi;

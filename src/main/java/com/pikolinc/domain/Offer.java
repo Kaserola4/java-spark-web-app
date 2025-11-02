@@ -6,6 +6,20 @@ import lombok.Data;
 
 import java.sql.Timestamp;
 
+/**
+ * Domain model representing an Offer (bid).
+ *<br>
+ * Fields:
+ * <ul>
+ *     <li>id</li>
+ *     <li>userId</li>
+ *     <li>itemId</li>
+ *     <li>amount</li>
+ *     <li>status</li>
+ *     <li>createdAt</li>
+ * </ul>
+ * The default status is {@link com.pikolinc.domain.OfferStatus#OPEN}.
+ */
 @Data
 @Builder
 @AllArgsConstructor

@@ -9,6 +9,22 @@ import spark.Spark;
 
 import java.util.List;
 
+/**
+ * Bootstraps and initializes the server.
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Read environment variables (PORT) via {@link com.pikolinc.config.Env}.</li>
+ *   <li>Configure Spark (port, static files).</li>
+ *   <li>Run all application initializers (database, routes, websockets, etc.).</li>
+ *   <li>Start Spark and register a shutdown hook for clean termination.</li>
+ * </ul>
+ *
+ * This class logs initializer progress and stops the server if an initializer fails.
+ *
+ * @see com.pikolinc.config.Env
+ * @see com.pikolinc.app.initializer.Initializer
+ */
 public class ServerInitializer {
     private static final Logger logger = LoggerFactory.getLogger(ServerInitializer.class);
 

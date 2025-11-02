@@ -11,6 +11,13 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JDBI SQL Object for Item persistence operations.
+ *
+ * <p>Contains table creation SQL, sample data insertion and CRUD operations.
+ *
+ * @see com.pikolinc.domain.Item
+ */
 @RegisterBeanMapper(Item.class)
 public interface ItemDao {
 

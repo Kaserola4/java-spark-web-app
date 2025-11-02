@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Concrete implementation of {@link UserService}.
+ *
+ * <p>Uses {@link com.pikolinc.dao.UserDao} via {@link com.pikolinc.services.base.BaseService#withDao}.
+ */
 public class UserServiceImpl extends BaseService implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 

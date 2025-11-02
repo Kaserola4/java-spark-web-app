@@ -4,6 +4,7 @@ import com.pikolinc.dao.OfferDao;
 import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
+import com.pikolinc.dto.request.OfferRebidDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
 import com.pikolinc.dto.response.OfferResponseDto;
 import com.pikolinc.exceptions.ValidationException;
@@ -23,6 +24,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Concrete implementation of {@link OfferService}.
+ *
+ * <p>Uses {@link com.pikolinc.dao.OfferDao} via {@link com.pikolinc.services.base.BaseService#withDao}.
+ * <br>
+ * Publishes Offer events to {@link com.pikolinc.infraestructure.events.EventBus}.
+ */
 public class OfferServiceImpl extends BaseService implements OfferService {
     private static final Logger logger = LoggerFactory.getLogger(OfferServiceImpl.class);
     private final ItemService itemService;
@@ -209,11 +217,11 @@ public class OfferServiceImpl extends BaseService implements OfferService {
     }
 
     @Override
-    public long updateAmount(long id, OfferUpdateDto updateDto) {
-        ValidationUtil.validate(updateDto);
+    public long updateAmount(long id, OfferRebidDto rebidDto) {
+        ValidationUtil.validate(rebidDto);
         validateOfferStatus(id, OfferStatus.OPEN);
 
-        long result = withDao(OfferDao.class, dao -> dao.updateAmount(id, updateDto.getAmount()));
+        long result = withDao(OfferDao.class, dao -> dao.updateAmount(id, rebidDto.getAmount()));
 
         if (result == 1) {
             OfferResponseDto dto = findById(id);

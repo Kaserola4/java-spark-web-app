@@ -193,6 +193,17 @@
             box-shadow: 0 2px 8px rgba(102, 102, 102, 0.2);
         }
 
+        .action-btn.rebid {
+            border-color: #3a3a1f;
+            background: linear-gradient(135deg, #2a2a15, #1f1f10);
+            color: #ffeb6b;
+        }
+
+        .action-btn.rebid:hover {
+            border-color: #ffeb6b;
+            box-shadow: 0 2px 8px rgba(255, 235, 107, 0.3);
+        }
+
         .action-btn:active {
             transform: translateY(0);
         }
@@ -697,10 +708,11 @@
                     <td><span class="status">{{status}}</span></td>
                     <td>{{createdAt}}</td>
                     <td class="actions-cell">
-                        <button class="action-btn accept" onclick="updateOfferStatus({{id}}, 'accept')">Accept</button>
-                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'reject')">Reject</button>
-                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'cancel')">Cancel</button>
-                        <button class="action-btn" onclick="updateOfferStatus({{id}}, 'complete')">Complete</button>
+                        <button class="action-btn accept" onclick="updateOfferStatusAction({{id}}, 'accept')">Accept</button>
+                        <button class="action-btn" onclick="updateOfferStatusAction({{id}}, 'reject')">Reject</button>
+                        <button class="action-btn" onclick="updateOfferStatusAction({{id}}, 'cancel')">Cancel</button>
+                        <button class="action-btn" onclick="updateOfferStatusAction({{id}}, 'complete')">Complete</button>
+                        <button class="action-btn rebid" onclick="rebidOffer({{id}})">Rebid</button>
                         <button class="action-btn delete" onclick="deleteOffer({{id}})">Delete</button>
                     </td>
                 </tr>
@@ -889,6 +901,7 @@
                     <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'reject')">Reject</button>
                     <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'cancel')">Cancel</button>
                     <button class="action-btn" onclick="updateOfferStatusAction(${offer.id}, 'complete')">Complete</button>
+                    <button class="action-btn rebid" onclick="rebidOffer(${offer.id})">Rebid</button>
                     <button class="action-btn delete" onclick="deleteOffer(${offer.id})">Delete</button>
                 </td>
             `;
@@ -934,6 +947,27 @@
         } catch (err) {
             console.error(`❌ Error deleting offer:`, err);
             alert(`Failed to delete offer. Check console for details.`);
+        }
+    }
+
+    async function rebidOffer(offerId) {
+        const newAmount = prompt('Enter new offer amount:');
+        if (!newAmount || isNaN(newAmount) || Number(newAmount) <= 0) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/v1/offers/${offerId}/amount`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ amount: Number(newAmount) })
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            console.log(`✅ Offer ${offerId} rebid to ${newAmount}`);
+        } catch (err) {
+            console.error(`❌ Error rebidding offer:`, err);
+            alert(`Failed to rebid offer. Check console for details.`);
         }
     }
 

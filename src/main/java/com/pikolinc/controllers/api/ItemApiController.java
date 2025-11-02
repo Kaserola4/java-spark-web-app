@@ -8,6 +8,12 @@ import spark.Response;
 
 import com.pikolinc.dto.request.ItemCreateDto;
 
+/**
+ * REST controller for items.
+ *
+ * <p>Exposes CRUD endpoints for {@link com.pikolinc.domain.Item}.
+ * It validates request bodies and delegates business logic to {@link com.pikolinc.services.ItemService}.
+ */
 public class ItemApiController {
     private final ItemService itemService;
     private final Gson gson;
