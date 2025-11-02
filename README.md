@@ -3,6 +3,8 @@
 A modern **Java RESTful web application** built using the [Spark Java](http://sparkjava.com/) micro-framework.
 It provides **real-time updates for collectibles and bidding** through WebSockets and a layered architecture featuring controllers, services, DAOs, and an in-memory database (H2).
 
+<img width="1899" height="923" alt="image" src="https://github.com/user-attachments/assets/805639ff-d2fd-460a-b0c3-673877c89307" />
+
 ## 📋 Table of Contents
 
 * [Overview](#-overview)
