@@ -11,6 +11,11 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * User persistence operations via JDBI.
+ *
+ * Methods include table creation, sample data, and CRUD operations.
+ */
 @RegisterBeanMapper(User.class)
 public interface UserDao {
     @SqlUpdate("""
