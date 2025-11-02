@@ -6,6 +6,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+/**
+ * Simple in-app EventBus used to publish domain events to registered listeners.
+ *
+ * <p>Listeners are grouped by EventType and executed synchronously.
+ */
 public class EventBus {
     private static final Map<EventType, List<EventListener<?>>> listeners = new ConcurrentHashMap<>();
 
