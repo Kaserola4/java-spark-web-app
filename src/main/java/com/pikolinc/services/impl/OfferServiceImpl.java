@@ -113,11 +113,11 @@ public class OfferServiceImpl extends BaseService implements OfferService {
                 throw new ApiResourceNotFoundException("Offer", id);
             }
 
+            EventBus.publish(new OfferDeletedEvent(id));
             long deleted = dao.deleteById(id);
 
             logger.info("Deleted offer with id: {}", id);
 
-            EventBus.publish(new OfferDeletedEvent(id));
             return deleted;
         });
     }
