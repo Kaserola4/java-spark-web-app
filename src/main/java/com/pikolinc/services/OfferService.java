@@ -4,6 +4,7 @@ package com.pikolinc.services;
 import com.pikolinc.domain.Offer;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
+import com.pikolinc.dto.request.OfferRebidDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
 import com.pikolinc.dto.response.OfferResponseDto;
 
@@ -30,5 +31,5 @@ public interface OfferService {
     long cancelOffer(long id);
 
     // Rebidding if status = OPEN
-    long updateAmount(long id, OfferUpdateDto offerUpdateDto);
+    long updateAmount(long id, OfferRebidDto offerRebidDto);
 }

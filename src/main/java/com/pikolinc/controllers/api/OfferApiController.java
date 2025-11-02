@@ -3,6 +3,7 @@ package com.pikolinc.controllers.api;
 import com.google.gson.Gson;
 import com.pikolinc.domain.OfferStatus;
 import com.pikolinc.dto.request.OfferCreateDto;
+import com.pikolinc.dto.request.OfferRebidDto;
 import com.pikolinc.dto.request.OfferUpdateDto;
 import com.pikolinc.exceptions.ValidationException;
 import com.pikolinc.services.OfferService;
@@ -113,6 +114,6 @@ public class OfferApiController {
     public Object updateAmount(Request request, Response response) {
         long id = ValidationUtil.validateParamFormat(":id", request.params(":id"), Long.class);
         ValidationUtil.validateNotEmptyBody(request.body());
-        return this.offerService.updateAmount(id, gson.fromJson(request.body(), OfferUpdateDto.class));
+        return this.offerService.updateAmount(id, gson.fromJson(request.body(), OfferRebidDto.class));
     }
 }
