@@ -5,6 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Domain model representing a collectible Item.
+ * <br>
+ * Fields:
+ * <ul>
+ *     <li>id: unique identifier</li>
+ *     <li>name: item name</li>
+ *     <li>description: textual description</li>
+ *     <li>price: base price</li>
+ * </ul>
+ */
 @Data
 @Builder
 @NoArgsConstructor
