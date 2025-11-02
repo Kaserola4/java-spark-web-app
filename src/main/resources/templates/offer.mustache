@@ -715,6 +715,11 @@
     }
 
     function upsertOfferRow(offer) {
+        const emptyRow = document.querySelector('.empty-state');
+        if (emptyRow && emptyRow.closest('tr')) {
+            emptyRow.closest('tr').remove();
+        }
+
         let row = document.querySelector(`tr[data-offer-id='${offer.id}']`);
         if (!row) {
             row = document.createElement("tr");
